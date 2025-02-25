@@ -1,0 +1,47 @@
+# Xcode
+#
+# User-specific files
+*.xcuserstate
+*.xcworkspace
+xcuserdata/
+
+# Build products
+build/
+DerivedData/
+
+# Swift Package Manager
+/.build/
+/Package.resolved
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# SwiftPM
+.swiftpm/
+
+# Xcode coverage files
+*.xccovreport
+*.xccovdata
+
+# xcdebugger
+xcdebugger/
+
+# Other Xcode-related files
+*.moved-aside
+*.swp
+*.lock
+
+# macOS
+.DS_Store
+
+# IDE Settings
+.idea/
+.vscode/
+
+# Temporary files
+*.tmp
+*.log
+
