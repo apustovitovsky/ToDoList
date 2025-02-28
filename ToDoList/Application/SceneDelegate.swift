@@ -11,20 +11,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
+    private var coordinator: ApplicationCoordinator?
+
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
-        let window = UIWindow(windowScene: windowScene)
+        window = UIWindow(windowScene: windowScene)
         let navigationController = UINavigationController()
+        window?.rootViewController = navigationController
+        coordinator = ApplicationCoordinator(router: DefaultRouter(rootController: navigationController))
+        window?.makeKeyAndVisible()
         
-        let taskListFactory = TaskListFactory()
-        let rootViewController = taskListFactory.build(with: navigationController)
+        coordinator?.start()
         
-        navigationController.viewControllers = [rootViewController]
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-        
-        self.window = window
     }
 
 

@@ -17,11 +17,19 @@ final class TaskDetailsView: UIViewController {
         return label
     }()
 
+    init(with task: TaskItemEntity) {
+        super.init(nibName: nil, bundle: nil)
+        label.text = task.title
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-
     }
 }
 
