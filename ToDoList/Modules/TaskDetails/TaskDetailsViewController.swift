@@ -26,11 +26,13 @@ final class TaskDetailsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
+        print("appear")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
+        print("disappear")
     }
     
     override func viewDidLoad() {
@@ -48,7 +50,7 @@ extension TaskDetailsViewController: TaskDetailsPresenterOutput {
 
 private extension TaskDetailsViewController {
     func setupHandlers() {
-        customView.hanlers = .init(
+        customView.handlers = .init(
             titleDidChange: { [weak self] title in
                 self?.presenter.titleDidChange(title)
             },

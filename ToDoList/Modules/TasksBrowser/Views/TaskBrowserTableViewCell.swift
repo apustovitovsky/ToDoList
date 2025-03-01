@@ -28,10 +28,10 @@ final class TaskBrowserTableViewCell: UITableViewCell {
         return label
     }()
 
-    private lazy var descriptionLabel: UILabel = {
+    private lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .light)
-        label.numberOfLines = 2
+        label.numberOfLines = 0
         label.textColor = Resources.Colors.white
         return label
     }()
@@ -58,21 +58,28 @@ final class TaskBrowserTableViewCell: UITableViewCell {
     func configure(with task: TaskDetailsEntity) {
         let isCompleted = task.isCompleted
 
-        titleLabel.attributedText = NSAttributedString(
-            string: !task.title.isEmpty ? task.title : Resources.Strings.titleNewTask,
-            attributes: isCompleted ? [
-                .strikethroughStyle: NSUnderlineStyle.single.rawValue,
-                .foregroundColor: isCompleted ? Resources.Colors.lightGray : Resources.Colors.white
-            ] : [:]
+        let attributedTitle = NSMutableAttributedString(
+            string: task.title.isEmpty ? Resources.Strings.titleEmptyTask : task.title,
+            attributes: getAttributes(for: isCompleted, isTitle: true)
         )
-        descriptionLabel.text = task.content
+        let attributedContent = NSMutableAttributedString(
+            string: task.content,
+            attributes: getAttributes(for: isCompleted, isTitle: false)
+        )
+
+        titleLabel.attributedText = attributedTitle
+        contentLabel.attributedText = attributedContent
+
         dateLabel.text = Date.formatted(date: task.createdAt)
         checkboxImageView.image = UIImage(systemName: isCompleted ? "checkmark.circle" : "circle")
         checkboxImageView.tintColor = isCompleted ? Resources.Colors.yellow : Resources.Colors.lightGray
-        descriptionLabel.textColor = titleLabel.textColor
-        
+
         if let searchText = getSearchText?(), !searchText.isEmpty {
-            updateHighlight(title: task.title, pattern: searchText)
+            applyHighlight(to: attributedTitle, pattern: searchText)
+            applyHighlight(to: attributedContent, pattern: searchText)
+
+            titleLabel.attributedText = attributedTitle
+            contentLabel.attributedText = attributedContent
         }
     }
 
@@ -95,7 +102,7 @@ private extension TaskBrowserTableViewCell {
             contentView.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
-        [titleLabel, descriptionLabel, dateLabel].forEach {
+        [titleLabel, contentLabel, dateLabel].forEach {
             stackView.addArrangedSubview($0)
         }
     }
@@ -113,17 +120,29 @@ private extension TaskBrowserTableViewCell {
         ])
     }
     
-    func updateHighlight(title: String, pattern: String) {
-        let attributedString = NSMutableAttributedString(string: title)
-        var searchRange = NSRange(location: 0, length: title.utf16.count)
-        
-        while let range = title.lowercased().range(of: pattern, options: [], range: Range(searchRange, in: title)) {
-            let nsRange = NSRange(range, in: title)
-            attributedString.addAttribute(.backgroundColor, value: Resources.Colors.yellow, range: nsRange)
-            attributedString.addAttribute(.foregroundColor, value: Resources.Colors.black, range: nsRange)
-            searchRange = NSRange(location: nsRange.location + nsRange.length, length: title.utf16.count - (nsRange.location + nsRange.length))
+    func getAttributes(for isCompleted: Bool, isTitle: Bool) -> [NSAttributedString.Key: Any] {
+        var attributes: [NSAttributedString.Key: Any] = [:]
+        if isCompleted {
+            attributes[.foregroundColor] = Resources.Colors.lightGray
+            if isTitle {
+                attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+            }
         }
-        titleLabel.attributedText = attributedString
+        return attributes
+    }
+    
+    func applyHighlight(to attributedString: NSMutableAttributedString, pattern: String) {
+        let fullText = attributedString.string.lowercased()
+        var searchRange = NSRange(location: 0, length: fullText.utf16.count)
+
+        while let range = fullText.range(of: pattern.lowercased(), options: [], range: Range(searchRange, in: fullText)) {
+            let nsRange = NSRange(range, in: fullText)
+            attributedString.addAttributes([
+                .backgroundColor: Resources.Colors.yellow,
+                .foregroundColor: Resources.Colors.black
+            ], range: nsRange)
+            searchRange = NSRange(location: nsRange.upperBound, length: fullText.utf16.count - nsRange.upperBound)
+        }
     }
 }
 

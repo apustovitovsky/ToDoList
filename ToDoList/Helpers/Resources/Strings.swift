@@ -11,6 +11,6 @@ extension Resources {
         static let contextMenuEdit              = "Edit"
         static let contextMenuShare             = "Share"
         static let contextMenuDelete            = "Delete"
-        static let titleNewTask                 = "New Task"
+        static let titleEmptyTask                 = "New Task"
     }
 }

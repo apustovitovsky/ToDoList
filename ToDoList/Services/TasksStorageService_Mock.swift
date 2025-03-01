@@ -34,8 +34,8 @@ private extension TasksStorageService_Mock {
     
     func generateTask(number: Int) -> TaskDetailsEntity {
         let title = "\(number) \(randomSentence(wordCount: Int.random(in: 2...4)))"
-        let description = "\(randomSentence(wordCount: Int.random(in: 5...25)))"
-        return TaskDetailsEntity(title: title, description: description, isCompleted: Bool.random())
+        let content = "\(randomSentence(wordCount: Int.random(in: 5...10)))"
+        return TaskDetailsEntity(title: title, content: content, isCompleted: Bool.random())
     }
     
     func randomSentence(wordCount: Int) -> String {

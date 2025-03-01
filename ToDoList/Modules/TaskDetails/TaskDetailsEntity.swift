@@ -12,10 +12,10 @@ struct TaskDetailsEntity {
     let createdAt: Date
     var isCompleted: Bool
     
-    init(title: String = "", description: String = "", isCompleted: Bool = false) {
+    init(title: String = "", content: String = "", isCompleted: Bool = false) {
         self.id = UUID()
         self.title = title
-        self.content = description
+        self.content = content
         self.createdAt = Date()
         self.isCompleted = isCompleted
     }

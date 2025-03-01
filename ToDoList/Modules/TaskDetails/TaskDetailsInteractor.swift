@@ -20,10 +20,12 @@ final class TaskDetailsInteractor {
 extension TaskDetailsInteractor: TaskDetailsInteractorInput {
     func titleDidChange(_ title: String) {
         entity.title = title
+        print(title)
     }
     
     func contentDidChange(_ content: String) {
         entity.content = content
+        print(content)
     }
     
     func moduleDidLoad() {

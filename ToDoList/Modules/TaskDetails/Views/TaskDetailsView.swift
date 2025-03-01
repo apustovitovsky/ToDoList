@@ -7,30 +7,31 @@ final class TaskDetailsView: UIView {
         var contentDidChange: Handler<String>
     }
     
-    var hanlers: Handlers?
+    var handlers: Handlers?
     
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
-        return label
+    private let titleTextField: UITextField = {
+        let textField = UITextField()
+        textField.textColor = Resources.Colors.white
+        textField.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        textField.backgroundColor = .clear
+        textField.borderStyle = .none
+        textField.returnKeyType = .done
+        return textField
     }()
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        label.textColor = Resources.Colors.lightGray
+        label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         return label
     }()
     
-    private let contentLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .white
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
-        return label
+    private let contentTextView: UITextView = {
+        let textView = UITextView()
+        textView.textColor = Resources.Colors.white
+        textView.font = UIFont.systemFont(ofSize: 20, weight: .regular)
+        textView.backgroundColor = .clear
+        return textView
     }()
     
     init() {
@@ -38,6 +39,7 @@ final class TaskDetailsView: UIView {
         setupUI()
         setupSubviews()
         setupConstraints()
+        setupDelegates()
     }
     
     @available(*, unavailable)
@@ -46,36 +48,63 @@ final class TaskDetailsView: UIView {
     }
     
     func configure(with entity: TaskDetailsEntity) {
-        titleLabel.text = entity.title
+        titleTextField.text = entity.title
         dateLabel.text = Date.formatted(date: entity.createdAt)
-        contentLabel.text = entity.content
+        contentTextView.text = entity.content
     }
 }
 
 private extension TaskDetailsView {
+    
+    func setupDelegates() {
+        titleTextField.delegate = self
+        contentTextView.delegate = self
+    }
     
     func setupUI() {
         backgroundColor = Resources.Colors.black
     }
     
     func setupSubviews() {
-        addSubview(titleLabel)
+        addSubview(titleTextField)
         addSubview(dateLabel)
-        addSubview(contentLabel)
+        addSubview(contentTextView)
     }
     
     func setupConstraints() {
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleTextField.translatesAutoresizingMaskIntoConstraints = false
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentTextView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Resources.Constants.paddingMedium),
-            titleLabel.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: Resources.Constants.paddingSmall),
-            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Resources.Constants.paddingMedium),
-            dateLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
-            contentLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: Resources.Constants.paddingMedium),
-            contentLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor)
+            titleTextField.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Resources.Constants.paddingMedium),
+            titleTextField.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: Resources.Constants.paddingMedium),
+            titleTextField.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -Resources.Constants.paddingMedium),
+            titleTextField.heightAnchor.constraint(equalToConstant: 40),
+            
+            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: Resources.Constants.paddingMedium),
+            dateLabel.leftAnchor.constraint(equalTo: titleTextField.leftAnchor),
+            
+            contentTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: Resources.Constants.paddingMedium),
+            contentTextView.leftAnchor.constraint(equalTo: titleTextField.leftAnchor),
+            contentTextView.rightAnchor.constraint(equalTo: titleTextField.rightAnchor),
+            contentTextView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -Resources.Constants.paddingMedium)
         ])
     }
 }
+
+extension TaskDetailsView: UITextFieldDelegate {
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        guard textField == titleTextField else { return }
+        handlers?.titleDidChange(textField.text ?? "")
+    }
+}
+
+extension TaskDetailsView: UITextViewDelegate {
+    func textViewDidChange(_ contentView: UITextView) {
+        guard contentView == contentTextView else { return }
+        handlers?.contentDidChange(contentView.text)
+    }
+}
+
 

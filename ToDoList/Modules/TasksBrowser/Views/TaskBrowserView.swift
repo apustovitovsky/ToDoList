@@ -7,7 +7,8 @@ final class TaskBrowserView: UIView {
     var taskItemsFiltered: [TaskDetailsEntity] {
         return !searchText.isEmpty
         ? tasks.filter {
-            $0.title.lowercased().contains(searchText.lowercased())
+            $0.title.lowercased().contains(searchText.lowercased()) ||
+            $0.content.lowercased().contains(searchText.lowercased())
         }
         : tasks
     }
@@ -91,23 +92,34 @@ extension TaskBrowserView: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
         let task = taskItemsFiltered[indexPath.row]
+        
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+            guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
+            let cellWidth = cell.frame.width - Resources.Constants.paddingMedium - Resources.Constants.checkboxSize
+            let cellHeight = cell.frame.height
             let preview = TaskBrowserPreviewCard(with: task)
-            preview.translatesAutoresizingMaskIntoConstraints = false
-            let targetWidth = tableView.bounds.width
-            preview.widthAnchor.constraint(equalToConstant: targetWidth).isActive = true
-            preview.setNeedsLayout()
-            preview.layoutIfNeeded()
-            let fittingSize = preview.systemLayoutSizeFitting(
-                CGSize(width: targetWidth, height: UIView.layoutFittingCompressedSize.height),
-                withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .fittingSizeLevel
-            )
             let previewVC = UIViewController()
             previewVC.view = preview
-            previewVC.preferredContentSize = fittingSize
+            previewVC.preferredContentSize = CGSize(width: cellWidth, height: cellHeight)
             return previewVC
+            
+//            let preview = TaskBrowserPreviewCard(with: task)
+//            preview.translatesAutoresizingMaskIntoConstraints = false
+//            let targetWidth = tableView.bounds.width
+//            preview.widthAnchor.constraint(equalToConstant: targetWidth).isActive = true
+//            preview.setNeedsLayout()
+//            preview.layoutIfNeeded()
+//            let fittingSize = preview.systemLayoutSizeFitting(
+//                CGSize(width: targetWidth, height: UIView.layoutFittingCompressedSize.height),
+//                withHorizontalFittingPriority: .required,
+//                verticalFittingPriority: .fittingSizeLevel
+//            )
+//            let previewVC = UIViewController()
+//            previewVC.view = preview
+//            previewVC.preferredContentSize = fittingSize
+//            return previewVC
         }, actionProvider: { _ in
             let edit = UIAction(
                 title: Resources.Strings.contextMenuEdit,

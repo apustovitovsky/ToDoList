@@ -16,7 +16,7 @@ final class TaskBrowserPreviewCard: UIView {
         return label
     }()
 
-    private lazy var descriptionLabel: UILabel = {
+    private lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .light)
         label.numberOfLines = 0
@@ -51,18 +51,18 @@ private extension TaskBrowserPreviewCard {
         layer.cornerRadius = Resources.Constants.cornerRadius
         clipsToBounds = true
         titleLabel.attributedText = NSAttributedString(
-            string: !task.title.isEmpty ? task.title : Resources.Strings.titleNewTask,
+            string: !task.title.isEmpty ? task.title : Resources.Strings.titleEmptyTask,
             attributes: task.isCompleted ? [
                 .strikethroughStyle: NSUnderlineStyle.single.rawValue
             ] : nil
         )
-        descriptionLabel.text = task.content
+        contentLabel.text = task.content
         dateLabel.text = Date.formatted(date: task.createdAt)
     }
     
     func setupSubviews() {
         addSubview(stackView)
-        [titleLabel, descriptionLabel, dateLabel].forEach {
+        [titleLabel, contentLabel, dateLabel].forEach {
             stackView.addArrangedSubview($0)
         }
     }
