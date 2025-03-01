@@ -20,10 +20,10 @@ final class ApplicationCoordinator: Coordinator {
         }
 
         switch option {
-        case .edit(let task):
+        case .details(let task):
             showTaskList()
             showEditTask(with: task, animated: false)
-        default:
+        case .browser:
             showTaskList()
         }
     }
@@ -40,12 +40,8 @@ private extension ApplicationCoordinator {
         router.setRootModule(module)
     }
     
-    func showEditTask(with task: TaskItemEntity, animated: Bool = true) {
-        let module = TaskDetailsFactory().build(with: task) { [weak self] output in
-            output.showTaskList = {
-                self?.router.popModule()
-            }
-        }
+    func showEditTask(with task: TaskDetailsEntity, animated: Bool = true) {
+        let module = TaskDetailsFactory().build(with: task)
         router.push(module, animated: animated)
     }
 }

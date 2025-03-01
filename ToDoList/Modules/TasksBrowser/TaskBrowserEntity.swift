@@ -1,14 +1,9 @@
-//
-//  ItemListEntity.swift
-//  ToDoList
-//
-
 import Foundation
 
 struct TaskBrowserEntity {
     
     var state: State?
-    var items: [TaskItemEntity]
+    var items: [TaskDetailsEntity]
     
     init(state: State? = nil) {
         self.state = state

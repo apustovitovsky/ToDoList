@@ -1,8 +1,3 @@
-//
-//  TaskBrowserPreview.swift
-//  ToDoList
-//
-
 import UIKit
 
 final class TaskBrowserPreviewCard: UIView {
@@ -36,15 +31,9 @@ final class TaskBrowserPreviewCard: UIView {
         return label
     }()
     
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = Resources.Strings.dateFormat
-        return formatter
-    }()
-    
-    init(title: String, description: String, createdAt: Date) {
+    init(with task: TaskDetailsEntity) {
         super.init(frame: .zero)
-        setupIU(title: title, description: description, createdAt: createdAt)
+        setupIU(with: task)
         setupSubviews()
         setupConstraints()
     }
@@ -57,14 +46,18 @@ final class TaskBrowserPreviewCard: UIView {
 
 private extension TaskBrowserPreviewCard {
     
-    func setupIU(title: String, description: String, createdAt: Date) {
+    func setupIU(with task: TaskDetailsEntity) {
         backgroundColor = Resources.Colors.gray
         layer.cornerRadius = Resources.Constants.cornerRadius
         clipsToBounds = true
-        titleLabel.text = !title.isEmpty ? title : Resources.Strings.titleNewTask
-        descriptionLabel.text = description
-        dateLabel.text = dateFormatter.string(from: createdAt)
-        
+        titleLabel.attributedText = NSAttributedString(
+            string: !task.title.isEmpty ? task.title : Resources.Strings.titleNewTask,
+            attributes: task.isCompleted ? [
+                .strikethroughStyle: NSUnderlineStyle.single.rawValue
+            ] : nil
+        )
+        descriptionLabel.text = task.content
+        dateLabel.text = Date.formatted(date: task.createdAt)
     }
     
     func setupSubviews() {

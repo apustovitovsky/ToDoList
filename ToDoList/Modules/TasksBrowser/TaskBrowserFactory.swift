@@ -1,8 +1,3 @@
-//
-//  TaskListFactory.swift
-//  ToDoList
-//
-
 struct TaskBrowserFactory: Factory {
     
     func build(with _: Void, _ completion: Handler<TaskBrowserModuleOutput>? = nil) -> Presentable {

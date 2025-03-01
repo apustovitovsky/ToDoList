@@ -1,15 +1,6 @@
-//
-//  TaskDetailsRouter.swift
-//  ToDoList
-//
-
 import UIKit
 
-protocol TaskDetailsRouterProtocol: AnyObject {
-    var showTaskList: Action? { get set }
-}
+protocol TaskDetailsModuleOutput: AnyObject {}
 
-class TaskDetailsRouter: DefaultRouter, TaskDetailsRouterProtocol {
-    var showTaskList: Action?
-}
+class TaskDetailsRouter: DefaultRouter, TaskDetailsModuleOutput {}
 

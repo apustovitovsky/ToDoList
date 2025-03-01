@@ -1,19 +1,15 @@
-//
-//  Created by Алексей on 16.11.2024.
-//
-
 import UIKit
 
 final class TaskBrowserView: UIView {
     
     private weak var presenter: TaskBrowserPresenterInput?
-    var taskItems: [TaskItemEntity] = []
-    var taskItemsFiltered: [TaskItemEntity] {
+    var tasks: [TaskDetailsEntity] = []
+    var taskItemsFiltered: [TaskDetailsEntity] {
         return !searchText.isEmpty
-        ? taskItems.filter {
+        ? tasks.filter {
             $0.title.lowercased().contains(searchText.lowercased())
         }
-        : taskItems
+        : tasks
     }
     var searchText: String = ""
     
@@ -64,9 +60,8 @@ final class TaskBrowserView: UIView {
 
 extension TaskBrowserView: TaskBrowserPresenterOutput {
     func configure(with entity: TaskBrowserEntity) {
-        taskItems = entity.items
+        tasks = entity.items
         footerView.toggleTaskCreationView(entity.state == .normal)
-        print(entity.state as Any)
         refreshUI()
     }
 }
@@ -98,11 +93,7 @@ extension TaskBrowserView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let task = taskItemsFiltered[indexPath.row]
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
-            let preview = TaskBrowserPreviewCard(
-                title: task.title,
-                description: task.description,
-                createdAt: task.createdAt
-            )
+            let preview = TaskBrowserPreviewCard(with: task)
             preview.translatesAutoresizingMaskIntoConstraints = false
             let targetWidth = tableView.bounds.width
             preview.widthAnchor.constraint(equalToConstant: targetWidth).isActive = true

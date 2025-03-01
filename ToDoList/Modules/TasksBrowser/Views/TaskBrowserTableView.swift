@@ -1,8 +1,3 @@
-//
-//  TaskBrowserTableView.swift
-//  ToDoList
-//
-
 import UIKit
 
 final class TaskBrowserTableView: UITableView {

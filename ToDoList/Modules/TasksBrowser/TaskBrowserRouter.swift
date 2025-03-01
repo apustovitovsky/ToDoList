@@ -1,14 +1,9 @@
-//
-//  ItemListRouter.swift
-//  ToDoList
-//
-
 import UIKit
 
 protocol TaskBrowserModuleOutput: AnyObject {
-    var showTaskDetails: Handler<TaskItemEntity>? { get set }
+    var showTaskDetails: Handler<TaskDetailsEntity>? { get set }
 }
 
 class TaskBrowserRouter: DefaultRouter, TaskBrowserModuleOutput {
-    var showTaskDetails: Handler<TaskItemEntity>?
+    var showTaskDetails: Handler<TaskDetailsEntity>?
 }

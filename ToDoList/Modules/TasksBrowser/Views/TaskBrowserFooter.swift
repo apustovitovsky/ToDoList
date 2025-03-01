@@ -1,8 +1,3 @@
-//
-//  TasksViewFooter.swift
-//  ToDoList
-//
-
 import UIKit
 
 final class TaskBrowserFooter: UIView {
@@ -41,7 +36,7 @@ extension TaskBrowserFooter {
         createTaskImageView.isUserInteractionEnabled = isActive
     }
     
-    func updateCountLabel(items: [TaskItemEntity]) {
+    func updateCountLabel(items: [TaskDetailsEntity]) {
         let completedItems = items.filter{ $0.isCompleted }
         progressLabel.text = !items.isEmpty ? "\(completedItems.count) of \(items.count) completed" : ""
     }

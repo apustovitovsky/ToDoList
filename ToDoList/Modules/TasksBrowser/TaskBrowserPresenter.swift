@@ -1,21 +1,16 @@
-//
-//  ItemListPresenter.swift
-//  ToDoList
-//
-
 import Foundation
 
 protocol TaskBrowserPresenterInput: AnyObject {
     func updateEntity()
     func createNewTask()
-    func editTask(_ task: TaskItemEntity)
+    func editTask(_ task: TaskDetailsEntity)
     func deleteTask(id: UUID)
     func toggleCompletion(id: UUID)
 }
 
 protocol TaskBrowserInteractorOutput: AnyObject {
     func configure(with entity: TaskBrowserEntity)
-    func editTask(_ task: TaskItemEntity)
+    func editTask(_ task: TaskDetailsEntity)
 }
 
 final class TaskBrowserPresenter {
@@ -46,7 +41,7 @@ extension TaskBrowserPresenter: TaskBrowserPresenterInput {
         interactor.updateItemList()
     }
     
-    func editTask(_ task: TaskItemEntity) {
+    func editTask(_ task: TaskDetailsEntity) {
         router.showTaskDetails?(task)
     }
     

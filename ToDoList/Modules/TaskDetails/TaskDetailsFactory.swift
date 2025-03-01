@@ -7,12 +7,24 @@ import Foundation
 
 struct TaskDetailsFactory: Factory {
     
-    func build(with id: TaskItemEntity, _ completion: Handler<TaskDetailsRouterProtocol>? = nil) -> Presentable {
+    func build(with task: TaskDetailsEntity, _ completion: Handler<TaskDetailsModuleOutput>? = nil) -> Presentable {
         let router = TaskDetailsRouter()
-        let _ = TaskDetailsPresenter()
-        let module = TaskDetailsView(with: id)
         completion?(router)
         
-        return module
+        let interactor = TaskDetailsInteractor(
+            entity: task,
+            service: TasksStorageService_Mock.shared
+        )
+        
+        let presenter = TaskDetailsPresenter(
+            router: router,
+            interactor: interactor
+        )
+        
+        let view = TaskDetailsViewController(presenter: presenter)
+        presenter.view = view
+        interactor.presenter = presenter
+        
+        return view
     }
 }

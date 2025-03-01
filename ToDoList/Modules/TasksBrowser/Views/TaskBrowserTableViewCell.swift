@@ -43,12 +43,6 @@ final class TaskBrowserTableViewCell: UITableViewCell {
         return label
     }()
 
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = Resources.Strings.dateFormat
-        return formatter
-    }()
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupIU()
@@ -61,18 +55,20 @@ final class TaskBrowserTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with task: TaskItemEntity) {
-        titleLabel.text = !task.title.isEmpty ? task.title : Resources.Strings.titleNewTask
-        descriptionLabel.text = task.description
-        
-        dateLabel.text = dateFormatter.string(from: task.createdAt)
-
+    func configure(with task: TaskDetailsEntity) {
         let isCompleted = task.isCompleted
 
+        titleLabel.attributedText = NSAttributedString(
+            string: !task.title.isEmpty ? task.title : Resources.Strings.titleNewTask,
+            attributes: isCompleted ? [
+                .strikethroughStyle: NSUnderlineStyle.single.rawValue,
+                .foregroundColor: isCompleted ? Resources.Colors.lightGray : Resources.Colors.white
+            ] : [:]
+        )
+        descriptionLabel.text = task.content
+        dateLabel.text = Date.formatted(date: task.createdAt)
         checkboxImageView.image = UIImage(systemName: isCompleted ? "checkmark.circle" : "circle")
         checkboxImageView.tintColor = isCompleted ? Resources.Colors.yellow : Resources.Colors.lightGray
-        
-        titleLabel.textColor = isCompleted ? Resources.Colors.lightGray : Resources.Colors.white
         descriptionLabel.textColor = titleLabel.textColor
         
         if let searchText = getSearchText?(), !searchText.isEmpty {

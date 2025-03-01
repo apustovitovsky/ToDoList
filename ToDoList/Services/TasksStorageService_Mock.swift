@@ -11,18 +11,18 @@ final class TasksStorageService_Mock: StorageService {
     
     private init() {}
     
-    private lazy var mockTasks: [TaskItemEntity] = {
+    private lazy var mockTasks: [TaskDetailsEntity] = {
         return (0..<Int.random(in: 10...50)).map { ind in generateTask(number: ind) }
     }()
     
-    func saveContext(_ context: [TaskItemEntity], completion: @escaping ResultHandler<[TaskItemEntity]>) {
+    func saveContext(_ context: [TaskDetailsEntity], completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.mockTasks = context
             completion(.success(context))
         }
     }
     
-    func loadContext(completion: @escaping ResultHandler<[TaskItemEntity]>) {
+    func loadContext(completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let tasks = self?.mockTasks else { return }
             completion(.success(tasks))
@@ -32,10 +32,10 @@ final class TasksStorageService_Mock: StorageService {
 
 private extension TasksStorageService_Mock {
     
-    func generateTask(number: Int) -> TaskItemEntity {
+    func generateTask(number: Int) -> TaskDetailsEntity {
         let title = "\(number) \(randomSentence(wordCount: Int.random(in: 2...4)))"
         let description = "\(randomSentence(wordCount: Int.random(in: 5...25)))"
-        return TaskItemEntity(title: title, description: description, isCompleted: Bool.random())
+        return TaskDetailsEntity(title: title, description: description, isCompleted: Bool.random())
     }
     
     func randomSentence(wordCount: Int) -> String {

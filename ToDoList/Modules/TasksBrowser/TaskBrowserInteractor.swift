@@ -1,8 +1,3 @@
-//
-//  ItemListInteractor.swift
-//  ToDoList
-//
-
 import Foundation
 
 protocol TaskBrowserInteractorInput: AnyObject {
@@ -29,7 +24,7 @@ final class TaskBrowserInteractor {
 extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     
     func createNewTask() {
-        let newTask = TaskItemEntity()
+        let newTask = TaskDetailsEntity()
         entity.state = .creating
         entity.items.insert(newTask, at: 0)
         configure(with: entity)
@@ -72,7 +67,6 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
             entity.items[index].isCompleted.toggle()
 
             service.saveContext(entity.items) { _ in
-                print("saved")
             }
             
             configure(with: entity)
