@@ -1,47 +1,12 @@
 import Foundation
 
-final class TaskNetworkManager_Mock: NetworkManager {
-    
-    static let shared = TaskNetworkManager_Mock()
-    
-    private init() {}
-    
-    private lazy var mockTasks: [TaskDetailsEntity] = {
-        return (0..<Int.random(in: 2...4)).map { ind in generateTask(number: ind) }
-    }()
-    
-    func saveContext(_ context: [TaskDetailsEntity], completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.mockTasks = context
-            completion(.success(context))
-        }
-    }
-    
-    func loadContext(completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let tasks = self?.mockTasks else { return }
-            completion(.success(tasks))
-        }
-    }
-
-}
-
-private extension TaskNetworkManager_Mock {
-    
-    func generateTask(number: Int) -> TaskDetailsEntity {
-        let title = "\(number) \(randomSentence(wordCount: Int.random(in: 2...4)))"
-        let content = "\(randomSentence(wordCount: Int.random(in: 5...10)))"
-        return TaskDetailsEntity(title: title, content: content, isCompleted: Bool.random())
-    }
-    
-    func randomSentence(wordCount: Int) -> String {
+struct SentenseGenerator {
+  
+    func generateSentense(wordCount: Int) -> String {
         guard wordCount > 0 else { return "" }
-        
         let words = (0..<wordCount).map { _ in randomWord(syllables: Int.random(in: 1...2)) }
-        
         guard let firstWord = words.first?.capitalized else { return "" }
         let remainingWords = words.dropFirst().map { $0.lowercased() }
-        
         return ([firstWord] + remainingWords).joined(separator: " ") + "."
     }
     
@@ -83,7 +48,6 @@ private extension TaskNetworkManager_Mock {
             "zuron", "rinora", "pixium", "torex", "jentis", "dixor", "vimora", "brexis", "ezian", "caldor"
         ]
         guard syllables > 0 else { return "" }
-        
         let word = (0..<syllables).map { _ in (syllableShortParts+syllableLongParts).randomElement() ?? "" }.joined()
         return word
     }

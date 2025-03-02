@@ -13,5 +13,8 @@ extension Resources {
         static let contextMenuDelete            = "Delete"
         static let titleEmptyTask               = "New Task"
         static let titlePlaceholder             = "New Task"
+        static let apiBasePath                  = "https://dummyjson.com"
+        static let apiTodosEndpoint             = "/todos"
+        static let apiQueryParamLimit            = "limit"
     }
 }

@@ -68,6 +68,7 @@ final class TaskBrowserView: UIView {
 extension TaskBrowserView: TaskBrowserPresenterOutput {
     func configure(with entity: TaskBrowserEntity) {
         tasks = entity.items
+        print(entity.state ?? "")
         footerView.toggleTaskCreationView(entity.state == .normal)
         refreshUI()
     }
@@ -103,29 +104,16 @@ extension TaskBrowserView: UITableViewDataSource, UITableViewDelegate {
         
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
             guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
-            let cellWidth = cell.frame.width - Resources.Constants.paddingMedium - Resources.Constants.checkboxSize
-            let cellHeight = cell.frame.height
-            let preview = TaskBrowserPreviewCard(with: task)
-            let previewVC = UIViewController()
-            previewVC.view = preview
-            previewVC.preferredContentSize = CGSize(width: cellWidth, height: cellHeight)
-            return previewVC
+    
+            let view = TaskBrowserPreviewView(with: task)
+            let viewController = UIViewController()
+            viewController.view = view
+            viewController.preferredContentSize = CGSize(
+                width: cell.frame.width - Resources.Constants.paddingMedium - Resources.Constants.checkboxSize,
+                height: cell.frame.height
+            )
+            return viewController
             
-//            let preview = TaskBrowserPreviewCard(with: task)
-//            preview.translatesAutoresizingMaskIntoConstraints = false
-//            let targetWidth = tableView.bounds.width
-//            preview.widthAnchor.constraint(equalToConstant: targetWidth).isActive = true
-//            preview.setNeedsLayout()
-//            preview.layoutIfNeeded()
-//            let fittingSize = preview.systemLayoutSizeFitting(
-//                CGSize(width: targetWidth, height: UIView.layoutFittingCompressedSize.height),
-//                withHorizontalFittingPriority: .required,
-//                verticalFittingPriority: .fittingSizeLevel
-//            )
-//            let previewVC = UIViewController()
-//            previewVC.view = preview
-//            previewVC.preferredContentSize = fittingSize
-//            return previewVC
         }, actionProvider: { _ in
             let edit = UIAction(
                 title: Resources.Strings.contextMenuEdit,

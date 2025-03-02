@@ -1,6 +1,6 @@
 import UIKit
 
-final class TaskBrowserPreviewCard: UIView {
+final class TaskBrowserPreviewView: UIView {
     
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
@@ -44,7 +44,7 @@ final class TaskBrowserPreviewCard: UIView {
     }
 }
 
-private extension TaskBrowserPreviewCard {
+private extension TaskBrowserPreviewView {
     
     func setupIU(with task: TaskDetailsEntity) {
         backgroundColor = Resources.Colors.gray

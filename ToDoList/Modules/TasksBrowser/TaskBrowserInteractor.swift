@@ -12,7 +12,7 @@ final class TaskBrowserInteractor {
     weak var presenter: TaskBrowserInteractorOutput?
     var entity: TaskBrowserEntity
     private let storageManager = TaskStorageManager.shared
-    private let networkManager = TaskNetworkManager_Mock.shared
+    private let networkService = TaskNetworkService.shared
     
     init(entity: TaskBrowserEntity) {
         self.entity = entity
@@ -22,18 +22,18 @@ final class TaskBrowserInteractor {
 extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     
     func addTask() {
-        let newTasks = [TaskDetailsEntity()]
+        let newTask = TaskDetailsEntity()
         entity.state = .creating
         configure(with: entity)
         
-        storageManager.createTasks(newTasks) { [weak self] in
+        storageManager.createTasks([newTask]) { [weak self] in
             self?.updateTasks()
-            //self.presenter?.editTask(task)
+            self?.presenter?.editTask(newTask)
         }
     }
     
     func updateTasksFromNetwork() {
-        networkManager.loadContext { [weak self] result in
+        networkService.fetchRandomTasks(count: 6) { [weak self] result in
             guard let self = self, case .success(let tasks) = result else { return }
             storageManager.createTasks(tasks) {
                 self.updateTasks()

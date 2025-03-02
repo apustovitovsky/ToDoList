@@ -4,7 +4,7 @@ import CoreData
 final class TaskStorageManager {
 
     static let shared: TaskStorageManager = .init()
-    
+    private init() {}
     private lazy var container: NSPersistentContainer = {
 
         let container = NSPersistentContainer(name: "ToDoList")
