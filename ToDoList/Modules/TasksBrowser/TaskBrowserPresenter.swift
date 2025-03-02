@@ -1,10 +1,10 @@
 import Foundation
 
 protocol TaskBrowserPresenterInput: AnyObject {
-    func updateEntity()
-    func createNewTask()
+    func moduleWillAppear()
+    func createTask()
     func editTask(_ task: TaskDetailsEntity)
-    func deleteTask(id: UUID)
+    func deleteTask(_ task: TaskDetailsEntity)
     func toggleCompletion(id: UUID)
 }
 
@@ -29,24 +29,24 @@ final class TaskBrowserPresenter {
 
 extension TaskBrowserPresenter: TaskBrowserPresenterInput {
     
-    func createNewTask() {
-        interactor.createNewTask()
+    func createTask() {
+        interactor.addTask()
     }
     
     func toggleCompletion(id: UUID) {
         interactor.toggleCompletion(id: id)
     }
     
-    func updateEntity() {
-        interactor.updateItemList()
+    func moduleWillAppear() {
+        interactor.updateTasks()
     }
     
     func editTask(_ task: TaskDetailsEntity) {
         router.showTaskDetails?(task)
     }
     
-    func deleteTask(id: UUID) {
-        interactor.deleteTask(id: id)
+    func deleteTask(_ task: TaskDetailsEntity) {
+        interactor.deleteTask(task)
     }
 }
 

@@ -1,8 +1,3 @@
-//
-//  TaskDetailsFactory.swift
-//  ToDoList
-//
-
 import Foundation
 
 struct TaskDetailsFactory: Factory {
@@ -11,10 +6,7 @@ struct TaskDetailsFactory: Factory {
         let router = TaskDetailsRouter()
         completion?(router)
         
-        let interactor = TaskDetailsInteractor(
-            entity: task,
-            service: TasksStorageService_Mock.shared
-        )
+        let interactor = TaskDetailsInteractor(entity: task)
         
         let presenter = TaskDetailsPresenter(
             router: router,

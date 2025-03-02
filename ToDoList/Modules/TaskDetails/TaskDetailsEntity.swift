@@ -19,6 +19,14 @@ struct TaskDetailsEntity {
         self.createdAt = Date()
         self.isCompleted = isCompleted
     }
+    
+    init(id: UUID, title: String, content: String, createdAt: Date, isCompleted: Bool) {
+        self.id = id
+        self.title = title
+        self.content = content
+        self.createdAt = createdAt
+        self.isCompleted = isCompleted
+    }
 }
 
 

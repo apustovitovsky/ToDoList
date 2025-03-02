@@ -1,18 +1,13 @@
-//
-//  MockService.swift
-//  ToDoList
-//
-
 import Foundation
 
-final class TasksStorageService_Mock: StorageService {
+final class TasksStorageService_Mock: NetworkService {
     
     static let shared = TasksStorageService_Mock()
     
     private init() {}
     
     private lazy var mockTasks: [TaskDetailsEntity] = {
-        return (0..<Int.random(in: 10...50)).map { ind in generateTask(number: ind) }
+        return (0..<Int.random(in: 2...4)).map { ind in generateTask(number: ind) }
     }()
     
     func saveContext(_ context: [TaskDetailsEntity], completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
@@ -28,6 +23,7 @@ final class TasksStorageService_Mock: StorageService {
             completion(.success(tasks))
         }
     }
+
 }
 
 private extension TasksStorageService_Mock {

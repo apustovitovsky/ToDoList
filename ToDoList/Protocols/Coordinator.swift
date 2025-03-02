@@ -1,8 +1,3 @@
-//
-//  Coordinator.swift
-//  ToDoList
-//
-
 protocol Coordinator {
     associatedtype Option
     func start()

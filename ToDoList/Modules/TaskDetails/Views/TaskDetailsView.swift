@@ -16,6 +16,12 @@ final class TaskDetailsView: UIView {
         textField.backgroundColor = .clear
         textField.borderStyle = .none
         textField.returnKeyType = .done
+        textField.attributedPlaceholder = NSAttributedString(
+            string: Resources.Strings.titlePlaceholder,
+            attributes: [
+            .foregroundColor: Resources.Colors.gray,
+            .font: UIFont.systemFont(ofSize: 34)
+        ])
         return textField
     }()
     
@@ -82,7 +88,7 @@ private extension TaskDetailsView {
             titleTextField.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -Resources.Constants.paddingMedium),
             titleTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: Resources.Constants.paddingMedium),
+            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: Resources.Constants.paddingLarge),
             dateLabel.leftAnchor.constraint(equalTo: titleTextField.leftAnchor),
             
             contentTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: Resources.Constants.paddingMedium),

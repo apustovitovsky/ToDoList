@@ -1,8 +1,3 @@
-//
-//  Presentable.swift
-//  ToDoList
-//
-
 import UIKit
 
 protocol Presentable {

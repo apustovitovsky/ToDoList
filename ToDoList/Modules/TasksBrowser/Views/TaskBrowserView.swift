@@ -2,7 +2,14 @@ import UIKit
 
 final class TaskBrowserView: UIView {
     
-    private weak var presenter: TaskBrowserPresenterInput?
+    struct Handlers {
+        var createTask: Action
+        var editTask: Handler<TaskDetailsEntity>
+        var deleteTask: Handler<TaskDetailsEntity>
+        var toggleCompletion: Handler<UUID>
+    }
+    
+    var handlers: Handlers?
     var tasks: [TaskDetailsEntity] = []
     var taskItemsFiltered: [TaskDetailsEntity] {
         return !searchText.isEmpty
@@ -40,13 +47,12 @@ final class TaskBrowserView: UIView {
     private lazy var footerView: TaskBrowserFooter = {
         let view = TaskBrowserFooter()
         view.onTaskCreateTap = { [weak self] in
-            self?.presenter?.createNewTask()
+            self?.handlers?.createTask()
         }
         return view
     }()
     
-    init(presenter: TaskBrowserPresenterInput?) {
-        self.presenter = presenter
+    init() {
         super.init(frame: .zero)
         setupUI()
         setupSubviews()
@@ -81,7 +87,7 @@ extension TaskBrowserView: UITableViewDataSource, UITableViewDelegate {
         let task = taskItemsFiltered[indexPath.row]
         
         cell.onCheckboxTapped = { [weak self] in
-            self?.presenter?.toggleCompletion(id: task.id)
+            self?.handlers?.toggleCompletion(task.id)
         }
         cell.getSearchText = { [weak self] in
             self?.searchText ?? String()
@@ -124,18 +130,18 @@ extension TaskBrowserView: UITableViewDataSource, UITableViewDelegate {
             let edit = UIAction(
                 title: Resources.Strings.contextMenuEdit,
                 image: UIImage(systemName: "square.and.pencil")) { [weak self] _ in
-                self?.presenter?.editTask(task)
+                self?.handlers?.editTask(task)
             }
             let share = UIAction(
                 title: Resources.Strings.contextMenuShare,
                 image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in
-                self?.presenter?.editTask(task)
+                self?.handlers?.editTask(task)
             }
             let delete = UIAction(
                 title: Resources.Strings.contextMenuDelete,
                 image: UIImage(systemName: "trash"),
                 attributes: .destructive) { [weak self] _ in
-                self?.presenter?.deleteTask(id: task.id)
+                self?.handlers?.deleteTask(task)
             }
             return UIMenu(title: "", children: [edit, share, delete])
         })

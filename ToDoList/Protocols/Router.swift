@@ -1,8 +1,3 @@
-//
-//  Router.swift
-//  ToDoList
-//
-
 protocol Router: Presentable {
     func push(_ module: Presentable?)
     func push(_ module: Presentable?, animated: Bool)

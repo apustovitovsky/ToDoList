@@ -1,9 +1,9 @@
 import Foundation
 
 protocol TaskBrowserInteractorInput: AnyObject {
-    func createNewTask()
-    func updateItemList()
-    func deleteTask(id: UUID)
+    func addTask()
+    func updateTasks()
+    func deleteTask(_ task: TaskDetailsEntity)
     func toggleCompletion(id: UUID)
 }
 
@@ -11,65 +11,67 @@ final class TaskBrowserInteractor {
 
     weak var presenter: TaskBrowserInteractorOutput?
     var entity: TaskBrowserEntity
-    let service: TasksStorageService_Mock
+    private let storageService = TaskManager.shared
+    private let networkService = TasksStorageService_Mock.shared
     
-    init(
-        entity: TaskBrowserEntity,
-        service: TasksStorageService_Mock) {
+    init(entity: TaskBrowserEntity) {
         self.entity = entity
-        self.service = service
     }
 }
 
 extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     
-    func createNewTask() {
-        let newTask = TaskDetailsEntity()
+    func addTask() {
+        let newTasks = [TaskDetailsEntity()]
         entity.state = .creating
-        entity.items.insert(newTask, at: 0)
         configure(with: entity)
         
-        service.saveContext(entity.items) { [weak self] _ in
-            guard let self else { return }
-            self.entity.state = .normal
-            self.configure(with: self.entity)
+        storageService.createTasks(newTasks) { [weak self] in
+            self?.updateTasks()
+            //self.presenter?.editTask(task)
         }
-        presenter?.editTask(newTask)
     }
     
-    func updateItemList() {
+    func updateTasksFromNetwork() {
+        networkService.loadContext { [weak self] result in
+            guard let self = self, case .success(let tasks) = result else { return }
+            storageService.createTasks(tasks) {
+                self.updateTasks()
+            }
+        }
+    }
+    
+    func updateTasks() {
         entity.state = .updating
+        configure(with: entity)
         
-        service.loadContext { [weak self] result in
-            guard let self else { return }
+        storageService.updateTasks { [weak self] result in
+            guard let self = self, case .success(let tasks) = result else { return }
             self.entity.state = .normal
-            guard case .success(let tasks) = result else { return }
             self.entity.items = tasks
             self.configure(with: entity)
+            
+            if tasks.isEmpty {
+                self.updateTasksFromNetwork()
+            }
         }
-        configure(with: entity)
     }
     
-    func deleteTask(id: UUID) {
+    func deleteTask(_ task : TaskDetailsEntity) {
         entity.state = .deleting
-        entity.items.removeAll{ $0.id == id }
-        
-        service.saveContext(entity.items) { [weak self] _ in
-            guard let self else { return }
-            self.entity.state = .normal
-            self.configure(with: self.entity)
-        }
         configure(with: entity)
+        
+        storageService.deleteTasks([task]) { [weak self] in
+            self?.updateTasks()
+        }
     }
     
     func toggleCompletion(id: UUID) {
-        if let index = entity.items.firstIndex(where: { $0.id == id }) {
-            entity.items[index].isCompleted.toggle()
-
-            service.saveContext(entity.items) { _ in
-            }
-            
-            configure(with: entity)
+        guard var task = entity.items.first(where: { $0.id == id }) else { return }
+        task.isCompleted.toggle()
+        
+        storageService.modifyTasks([task]) { [weak self] in
+            self?.updateTasks()
         }
     }
 }

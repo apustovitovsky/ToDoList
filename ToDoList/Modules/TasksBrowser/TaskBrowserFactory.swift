@@ -5,8 +5,7 @@ struct TaskBrowserFactory: Factory {
         completion?(router)
         
         let interactor = TaskBrowserInteractor(
-            entity: TaskBrowserEntity(),
-            service: TasksStorageService_Mock.shared
+            entity: TaskBrowserEntity()
         )
         
         let presenter = TaskBrowserPresenter(

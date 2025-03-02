@@ -7,25 +7,22 @@ protocol TaskDetailsInteractorInput: AnyObject {
 final class TaskDetailsInteractor {
     weak var presenter: TaskDetailsInteractorOutput?
     var entity: TaskDetailsEntity
-    let service: TasksStorageService_Mock
+    let service = TaskManager.shared
     
-    init(
-        entity: TaskDetailsEntity,
-        service: TasksStorageService_Mock) {
+    init(entity: TaskDetailsEntity) {
         self.entity = entity
-        self.service = service
     }
 }
 
 extension TaskDetailsInteractor: TaskDetailsInteractorInput {
     func titleDidChange(_ title: String) {
         entity.title = title
-        print(title)
+        service.modifyTasks([entity], completion: nil)
     }
     
     func contentDidChange(_ content: String) {
         entity.content = content
-        print(content)
+        service.modifyTasks([entity], completion: nil)
     }
     
     func moduleDidLoad() {

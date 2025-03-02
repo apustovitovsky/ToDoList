@@ -1,8 +1,3 @@
-//
-//  Factory.swift
-//  ToDoList
-//
-
 protocol Factory {
     associatedtype Source
     associatedtype Output

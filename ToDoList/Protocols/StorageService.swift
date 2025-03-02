@@ -1,12 +1,6 @@
-//
-//  StorageService.swift
-//  ToDoList
-//
-
 protocol StorageService: AnyObject {
-    associatedtype Context
-    
-    func saveContext(_: Context, completion: @escaping ResultHandler<Context>)
-    func loadContext(completion: @escaping ResultHandler<Context>)
+    func createTasks(_ tasks: [TaskDetailsEntity], completion: Action?)
+    func updateTasks(completion: @escaping ResultHandler<[TaskDetailsEntity]>)
+    func modifyTasks(_ task: [TaskDetailsEntity], completion: Action?)
+    func deleteTasks(_ tasks: [TaskDetailsEntity], completion: Action?)
 }
-
