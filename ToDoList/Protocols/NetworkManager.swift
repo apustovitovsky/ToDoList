@@ -1,4 +1,4 @@
-protocol NetworkService: AnyObject {
+protocol NetworkManager: AnyObject {
     associatedtype Context
     
     func saveContext(_: Context, completion: @escaping ResultHandler<Context>)

@@ -1,9 +1,9 @@
 import Foundation
 import CoreData
 
-final class TaskManager: StorageService {
+final class TaskStorageManager {
 
-    static let shared: TaskManager = .init()
+    static let shared: TaskStorageManager = .init()
     
     private lazy var container: NSPersistentContainer = {
 

@@ -1,8 +1,8 @@
 import Foundation
 
-final class TasksStorageService_Mock: NetworkService {
+final class TaskNetworkManager_Mock: NetworkManager {
     
-    static let shared = TasksStorageService_Mock()
+    static let shared = TaskNetworkManager_Mock()
     
     private init() {}
     
@@ -26,7 +26,7 @@ final class TasksStorageService_Mock: NetworkService {
 
 }
 
-private extension TasksStorageService_Mock {
+private extension TaskNetworkManager_Mock {
     
     func generateTask(number: Int) -> TaskDetailsEntity {
         let title = "\(number) \(randomSentence(wordCount: Int.random(in: 2...4)))"

@@ -7,7 +7,7 @@ protocol TaskDetailsInteractorInput: AnyObject {
 final class TaskDetailsInteractor {
     weak var presenter: TaskDetailsInteractorOutput?
     var entity: TaskDetailsEntity
-    let service = TaskManager.shared
+    let service = TaskStorageManager.shared
     
     init(entity: TaskDetailsEntity) {
         self.entity = entity
