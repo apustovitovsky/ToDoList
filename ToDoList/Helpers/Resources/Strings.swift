@@ -15,6 +15,7 @@ extension Resources {
         static let titlePlaceholder             = "New Task"
         static let apiBasePath                  = "https://dummyjson.com"
         static let apiTodosEndpoint             = "/todos"
-        static let apiQueryParamLimit            = "limit"
+        static let apiRandomTodosEndpoint       = "/todos/random"
+        static let apiQueryParamLimit           = "limit"
     }
 }

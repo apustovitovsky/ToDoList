@@ -2,6 +2,7 @@ protocol TaskDetailsPresenterInput: AnyObject {
     func moduleDidLoad()
     func titleDidChange(_ title: String)
     func contentDidChange(_ content: String)
+    func editingDidFinish()
 }
 
 protocol TaskDetailsInteractorOutput: AnyObject {
@@ -22,6 +23,10 @@ final class TaskDetailsPresenter {
 }
 
 extension TaskDetailsPresenter: TaskDetailsPresenterInput {
+    func editingDidFinish() {
+        interactor.editingDidFinish()
+    }
+    
     func titleDidChange(_ title: String) {
         interactor.titleDidChange(title)
     }

@@ -33,7 +33,7 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     }
     
     func updateTasksFromNetwork() {
-        networkService.fetchRandomTasks(count: 6) { [weak self] result in
+        networkService.fetchTasks { [weak self] result in
             guard let self = self, case .success(let tasks) = result else { return }
             storageManager.createTasks(tasks) {
                 self.updateTasks()

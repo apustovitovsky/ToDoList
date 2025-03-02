@@ -2,6 +2,7 @@ protocol TaskDetailsInteractorInput: AnyObject {
     func moduleDidLoad()
     func titleDidChange(_ title: String)
     func contentDidChange(_ content: String)
+    func editingDidFinish()
 }
 
 final class TaskDetailsInteractor {
@@ -15,14 +16,16 @@ final class TaskDetailsInteractor {
 }
 
 extension TaskDetailsInteractor: TaskDetailsInteractorInput {
+    func editingDidFinish() {
+        service.modifyTasks([entity], completion: nil)
+    }
+    
     func titleDidChange(_ title: String) {
         entity.title = title
-        service.modifyTasks([entity], completion: nil)
     }
     
     func contentDidChange(_ content: String) {
         entity.content = content
-        service.modifyTasks([entity], completion: nil)
     }
     
     func moduleDidLoad() {

@@ -24,9 +24,10 @@ final class TaskBrowserViewController: UIViewController {
         view = customView
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        presenter.moduleWillAppear()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: true)
+        presenter.moduleDidAppear()
     }
 }
 

@@ -1,7 +1,7 @@
 import Foundation
 
 protocol TaskBrowserPresenterInput: AnyObject {
-    func moduleWillAppear()
+    func moduleDidAppear()
     func createTask()
     func editTask(_ task: TaskDetailsEntity)
     func deleteTask(_ task: TaskDetailsEntity)
@@ -37,7 +37,7 @@ extension TaskBrowserPresenter: TaskBrowserPresenterInput {
         interactor.toggleCompletion(id: id)
     }
     
-    func moduleWillAppear() {
+    func moduleDidAppear() {
         interactor.updateTasks()
     }
     

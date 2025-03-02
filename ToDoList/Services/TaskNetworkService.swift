@@ -23,7 +23,7 @@ extension TaskDetailsEntity {
     }
 }
 
-struct TaskNetworkRequest: NetworkRequest {
+struct TasksNetworkRequestDefault: NetworkRequest {
 
     typealias Response = TaskListResponse
     
@@ -31,10 +31,23 @@ struct TaskNetworkRequest: NetworkRequest {
     var method: HTTPMethod = .get
     var queryItems: [URLQueryItem]? = .init()
     
-    init(limit: Int = 254) {
+    init(limit: Int) {
         queryItems = [
             URLQueryItem(name: Resources.Strings.apiQueryParamLimit, value: "\(limit)")
         ]
+    }
+}
+
+struct RandomTasksNetworkRequest: NetworkRequest {
+
+    typealias Response = [TaskItemResponse]
+    
+    var endpoint: String
+    var method: HTTPMethod = .get
+    var queryItems: [URLQueryItem]? = .init()
+    
+    init(limit: Int) {
+        endpoint = Resources.Strings.apiRandomTodosEndpoint + "/\(limit)"
     }
 }
 
@@ -45,15 +58,11 @@ final class TaskNetworkService: NetworkService {
     
     let basePath: String = Resources.Strings.apiBasePath
     
-    func fetchRandomTasks(count: Int = 5, completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
-        try? send(request: TaskNetworkRequest()) { result in
+    func fetchTasks(completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
+        try? send(request: RandomTasksNetworkRequest(limit: 2)) { result in
             switch result {
             case .success(let response):
-                let tasks = response.todos
-                    .shuffled()
-                    .prefix(count)
-                    .map { TaskDetailsEntity(from: $0) }
-                
+                let tasks = response.map { TaskDetailsEntity(from: $0) }
                 completion(.success(tasks))
             case .failure(let error):
                 completion(.failure(error))
