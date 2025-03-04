@@ -49,6 +49,7 @@ extension TaskBrowserViewController: TaskBrowserPresenterOutput {
 private extension TaskBrowserViewController {
     
     private func setupNavigationBar() {
+        title = Resources.Strings.taskBrowserTitle
         let gearImage = UIImage(systemName: "gearshape")
         let settingsButton = UIBarButtonItem(
             image: gearImage,
