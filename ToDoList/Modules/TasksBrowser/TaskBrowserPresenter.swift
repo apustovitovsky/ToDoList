@@ -3,22 +3,23 @@ import Foundation
 protocol TaskBrowserPresenterInput: AnyObject {
     func moduleDidAppear()
     func createTask()
-    func editTask(_ task: TaskDetailsEntity)
-    func deleteTask(_ task: TaskDetailsEntity)
+    func editTask(_: TaskDetailsModel)
+    func deleteTask(_: TaskDetailsModel)
     func toggleCompletion(id: UUID)
+    func settingsTapped()
 }
 
 protocol TaskBrowserInteractorOutput: AnyObject {
-    func configure(with entity: TaskBrowserEntity)
-    func editTask(_ task: TaskDetailsEntity)
+    func configure(with model: TaskBrowserModel)
+    func editTask(_ model: TaskDetailsModel)
 }
 
 final class TaskBrowserPresenter {
 
     weak var view: TaskBrowserPresenterOutput?
-    private let interactor: TaskBrowserInteractorInput
     private let router: TaskBrowserModuleOutput
-    
+    private let interactor: TaskBrowserInteractorInput
+
     init(
         router: TaskBrowserModuleOutput,
         interactor: TaskBrowserInteractorInput) {
@@ -28,6 +29,9 @@ final class TaskBrowserPresenter {
 }
 
 extension TaskBrowserPresenter: TaskBrowserPresenterInput {
+    func settingsTapped() {
+        router.showSettings?()
+    }
     
     func createTask() {
         interactor.addTask()
@@ -41,18 +45,18 @@ extension TaskBrowserPresenter: TaskBrowserPresenterInput {
         interactor.updateTasks()
     }
     
-    func editTask(_ task: TaskDetailsEntity) {
+    func editTask(_ task: TaskDetailsModel) {
         router.showTaskDetails?(task)
     }
     
-    func deleteTask(_ task: TaskDetailsEntity) {
+    func deleteTask(_ task: TaskDetailsModel) {
         interactor.deleteTask(task)
     }
 }
 
 extension TaskBrowserPresenter: TaskBrowserInteractorOutput {
-    func configure(with entity: TaskBrowserEntity) {
-        view?.configure(with: entity)
+    func configure(with model: TaskBrowserModel) {
+        view?.configure(with: model)
     }
 }
 

@@ -1,7 +1,7 @@
 import UIKit
 
 protocol TaskDetailsPresenterOutput: AnyObject {
-    func configure(with entity: TaskDetailsEntity)
+    func configure(with _: TaskDetailsModel)
 }
 
 final class TaskDetailsViewController: UIViewController {
@@ -41,8 +41,8 @@ final class TaskDetailsViewController: UIViewController {
 }
 
 extension TaskDetailsViewController: TaskDetailsPresenterOutput {
-    func configure(with entity: TaskDetailsEntity) {
-        customView.configure(with: entity)
+    func configure(with model: TaskDetailsModel) {
+        customView.configure(with: model)
     }
 }
 

@@ -18,8 +18,8 @@ extension TaskEntity {
 
 extension TaskEntity : Identifiable {
     
-    func toDomain() -> TaskDetailsEntity {
-        return TaskDetailsEntity(
+    func toModel() -> TaskDetailsModel {
+        TaskDetailsModel(
             id: self.id ?? UUID(),
             title: self.title ?? "",
             content: self.content ?? "",
@@ -28,13 +28,12 @@ extension TaskEntity : Identifiable {
         )
     }
     
-    func fromDomain(with entity: TaskDetailsEntity) -> TaskEntity {
-        id = entity.id
-        title = entity.title
-        content = entity.content
-        createdAt = entity.createdAt
-        isCompleted = entity.isCompleted
-        return self
+    func update(from model: TaskDetailsModel) {
+        id = model.id
+        title = model.title
+        content = model.content
+        createdAt = model.createdAt
+        isCompleted = model.isCompleted
     }
 }
 

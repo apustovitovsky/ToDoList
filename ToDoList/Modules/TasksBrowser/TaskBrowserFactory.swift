@@ -1,22 +1,18 @@
-struct TaskBrowserFactory: Factory {
-    
-    func build(with _: Void, _ completion: Handler<TaskBrowserModuleOutput>? = nil) -> Presentable {
+struct TaskBrowserFactory: ModuleFactory {
+    func makeStep(with _: Void) -> RoutingStep<TaskBrowserRouter> {
         let router = TaskBrowserRouter()
-        completion?(router)
         
         let interactor = TaskBrowserInteractor(
-            entity: TaskBrowserEntity()
+            model: TaskBrowserModel()
         )
-        
         let presenter = TaskBrowserPresenter(
             router: router,
             interactor: interactor
         )
-
         let view = TaskBrowserViewController(presenter: presenter)
         presenter.view = view
         interactor.presenter = presenter
 
-        return view
+        return RoutingStep(module: view, output: router)
     }
 }

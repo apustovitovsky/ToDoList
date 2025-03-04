@@ -21,16 +21,16 @@ private extension TaskBrowserSearchBar {
         backgroundImage = UIImage()
         layer.cornerRadius = Resources.Constants.cornerRadius
         clipsToBounds = true
-        searchTextField.backgroundColor = Resources.Colors.gray
-        searchTextField.textColor = Resources.Colors.lightGray
+        searchTextField.backgroundColor = Resources.Colors.backgroundSecondary
+//        searchTextField.textColor = Resources.Colors.lightGray
 
         searchTextField.attributedPlaceholder = NSAttributedString(
             string: Resources.Strings.searchBarPlaceholder,
-            attributes: [.foregroundColor: Resources.Colors.lightGray]
+            attributes: [.foregroundColor: Resources.Colors.secondaryColor]
         )
         
         if let leftIconView = searchTextField.leftView as? UIImageView {
-            leftIconView.tintColor = Resources.Colors.lightGray
+            leftIconView.tintColor = Resources.Colors.secondaryColor
         }
     }
 }

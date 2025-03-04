@@ -4,14 +4,14 @@ final class TaskBrowserView: UIView {
     
     struct Handlers {
         var createTask: Action
-        var editTask: Handler<TaskDetailsEntity>
-        var deleteTask: Handler<TaskDetailsEntity>
+        var editTask: Handler<TaskDetailsModel>
+        var deleteTask: Handler<TaskDetailsModel>
         var toggleCompletion: Handler<UUID>
     }
     
     var handlers: Handlers?
-    var tasks: [TaskDetailsEntity] = []
-    var taskItemsFiltered: [TaskDetailsEntity] {
+    var tasks: [TaskDetailsModel] = []
+    var taskItemsFiltered: [TaskDetailsModel] {
         return !searchText.isEmpty
         ? tasks.filter {
             $0.title.lowercased().contains(searchText.lowercased()) ||
@@ -23,8 +23,8 @@ final class TaskBrowserView: UIView {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = Resources.Strings.tasksLabel
-        label.textColor = Resources.Colors.white
+        label.text = Resources.Strings.taskBrowserTitle
+        label.textColor = Resources.Colors.primaryColor
         label.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         label.textAlignment = .left
         return label
@@ -66,7 +66,7 @@ final class TaskBrowserView: UIView {
 }
 
 extension TaskBrowserView: TaskBrowserPresenterOutput {
-    func configure(with entity: TaskBrowserEntity) {
+    func configure(with entity: TaskBrowserModel) {
         tasks = entity.items
         print(entity.state ?? "")
         footerView.toggleTaskCreationView(entity.state == .normal)
@@ -176,7 +176,7 @@ private extension TaskBrowserView {
     }
     
     func setupUI() {
-        backgroundColor = Resources.Colors.black
+        backgroundColor = Resources.Colors.backgroundPrimary
     }
 }
 

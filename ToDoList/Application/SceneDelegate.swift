@@ -1,10 +1,3 @@
-//
-//  SceneDelegate.swift
-//  ToDoList
-//
-//  Created by Алексей on 25.02.2025.
-//
-
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -15,7 +8,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
-
+        
         window = UIWindow(windowScene: windowScene)
         let navigationController = AppNavigationController()
         window?.rootViewController = navigationController
@@ -24,6 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.makeKeyAndVisible()
         
         coordinator?.start()
+        ThemeProvider.shared.applyTheme()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

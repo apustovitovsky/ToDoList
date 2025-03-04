@@ -1,10 +1,3 @@
-//
-//  AppDelegate.swift
-//  ToDoList
-//
-//  Created by Алексей on 25.02.2025.
-//
-
 import UIKit
 import CoreData
 
@@ -14,7 +7,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        UILabel.appearance().textColor = Resources.Colors.primaryColor
+        UISearchTextField.appearance().textColor = Resources.Colors.primaryColor
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: Resources.Colors.primaryColor]
         return true
     }
 

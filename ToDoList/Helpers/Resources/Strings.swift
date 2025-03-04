@@ -6,7 +6,8 @@
 extension Resources {
     enum Strings {
         static let dateFormat                   = "dd/MM/yyyy"
-        static let tasksLabel: String           = "Current tasks"
+        static let taskBrowserTitle: String     = "Todos"
+        static let settingsTitle: String        = "Settings"
         static let searchBarPlaceholder: String = "Search"
         static let contextMenuEdit              = "Edit"
         static let contextMenuShare             = "Share"
@@ -17,5 +18,11 @@ extension Resources {
         static let apiTodosEndpoint             = "/todos"
         static let apiRandomTodosEndpoint       = "/todos/random"
         static let apiQueryParamLimit           = "limit"
+    }
+}
+
+extension Resources.Strings {
+    enum UserDefaults {
+        static let themeKey                     = "selectedTheme"
     }
 }

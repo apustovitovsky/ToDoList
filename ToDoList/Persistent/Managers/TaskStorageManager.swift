@@ -16,12 +16,11 @@ final class TaskStorageManager {
         return container
     }()
     
-    func createTasks(_ tasks: [TaskDetailsEntity], completion: Action?) {
+    func createTasks(_ tasks: [TaskDetailsModel], completion: Action?) {
         container.performBackgroundTask { context in
             tasks.forEach { task in
-                let _ = TaskEntity(context: context).fromDomain(with: task)
+                let _ = TaskEntity(context: context).update(from: task)
             }
-            
             do {
                 try context.save()
                 DispatchQueue.main.async {
@@ -33,14 +32,13 @@ final class TaskStorageManager {
         }
     }
     
-    func updateTasks(completion: @escaping ResultHandler<[TaskDetailsEntity]>) {
+    func updateTasks(completion: @escaping ResultHandler<[TaskDetailsModel]>) {
         container.performBackgroundTask { context in
             let request: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
             let sortDescriptor = NSSortDescriptor(key: "createdAt", ascending: false)
             request.sortDescriptors = [sortDescriptor]
-
             do {
-                let tasks = try context.fetch(request).map { $0.toDomain() }
+                let tasks = try context.fetch(request).map { $0.toModel() }
                 DispatchQueue.main.async {
                     completion(.success(tasks))
                 }
@@ -52,7 +50,7 @@ final class TaskStorageManager {
         }
     }
 
-    func modifyTasks(_ tasks: [TaskDetailsEntity], completion: Action?) {
+    func modifyTasks(_ tasks: [TaskDetailsModel], completion: Action?) {
         container.performBackgroundTask { context in
             let request: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
             let ids = tasks.map { $0.id }
@@ -67,7 +65,6 @@ final class TaskStorageManager {
                     }
                 }
                 try context.save()
-
                 DispatchQueue.main.async {
                     completion?()
                 }
@@ -77,13 +74,11 @@ final class TaskStorageManager {
         }
     }
     
-    func deleteTasks(_ tasks: [TaskDetailsEntity], completion: Action?) {
+    func deleteTasks(_ tasks: [TaskDetailsModel], completion: Action?) {
         container.performBackgroundTask { context in
             let request: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
-            
             let ids = tasks.map { $0.id }
             request.predicate = NSPredicate(format: "id IN %@", ids as CVarArg)
-
             do {
                 let results = try context.fetch(request)
                 results.forEach { context.delete($0) }

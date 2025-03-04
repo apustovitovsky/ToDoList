@@ -1,9 +1,9 @@
 import Foundation
 
-struct TaskBrowserEntity {
+struct TaskBrowserModel {
     
     var state: State?
-    var items: [TaskDetailsEntity]
+    var items: [TaskDetailsModel]
     
     init(state: State? = nil) {
         self.state = state
@@ -11,7 +11,7 @@ struct TaskBrowserEntity {
     }
 }
 
-extension TaskBrowserEntity {
+extension TaskBrowserModel {
     
     enum State {
         case normal

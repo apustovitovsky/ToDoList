@@ -1,0 +1,53 @@
+import Foundation
+
+final class ApplicationCoordinator: Coordinator {
+    
+    private let router: Router
+    
+    init(router: Router) {
+        self.router = router
+    }
+    
+    func start(with option: LaunchOption?) {
+        guard let option else {
+            showTaskList()
+            return
+        }
+        switch option {
+        case .details(let task):
+            showTaskList()
+            showEditTask(with: task, animated: false)
+        case .browser:
+            showTaskList()
+        case .settings:
+            showTaskList()
+            showSettings(animated: true)
+        }
+    }
+}
+
+private extension ApplicationCoordinator {
+    
+    func showTaskList() {
+        let step = TaskBrowserFactory().makeStep()
+        
+        step.output.showTaskDetails = { [weak self] task in
+            self?.showEditTask(with: task, animated: true)
+        }
+        step.output.showSettings = { [weak self] in
+            self?.showSettings(animated: true)
+        }
+        router.setRootModule(step)
+    }
+    
+    func showEditTask(with model: TaskDetailsModel, animated: Bool) {
+        let step = TaskDetailsFactory().makeStep(with: model)
+        router.push(step, animated: animated)
+    }
+    
+    func showSettings(animated: Bool) {
+        let step = SettingsFactory().makeStep()
+        router.push(step, animated: animated)
+    }
+}
+

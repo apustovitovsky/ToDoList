@@ -1,22 +1,19 @@
-import Foundation
-
-struct TaskDetailsFactory: Factory {
+struct TaskDetailsFactory: ModuleFactory {
     
-    func build(with task: TaskDetailsEntity, _ completion: Handler<TaskDetailsModuleOutput>? = nil) -> Presentable {
+    func makeStep(with model: TaskDetailsModel) -> RoutingStep<TaskDetailsRouter> {
         let router = TaskDetailsRouter()
-        completion?(router)
-        
-        let interactor = TaskDetailsInteractor(entity: task)
-        
+
+        let interactor = TaskDetailsInteractor(
+            model: model
+        )
         let presenter = TaskDetailsPresenter(
             router: router,
             interactor: interactor
         )
-        
         let view = TaskDetailsViewController(presenter: presenter)
         presenter.view = view
         interactor.presenter = presenter
         
-        return view
+        return RoutingStep(module: view, output: router)
     }
 }

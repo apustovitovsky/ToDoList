@@ -1,8 +1,3 @@
-//
-//  DefaultRouter.swift
-//  ToDoList
-//
-
 import UIKit
 
 class DefaultRouter: Router {
@@ -40,7 +35,6 @@ class DefaultRouter: Router {
     func setRootModule(_ module: Presentable?, hideBar: Bool) {
       guard let controller = module?.toPresent() else { return }
       rootController?.setViewControllers([controller], animated: false)
-   
       rootController?.isNavigationBarHidden = hideBar
     }
     

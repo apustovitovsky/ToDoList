@@ -1,18 +1,43 @@
-//
-//  Created by Алексей on 25.02.2025.
-//
-
 import UIKit
+
 
 extension Resources {
     
     enum Colors {
-        static let black: UIColor       = .init(hex: "#040404")
-        static let white: UIColor       = .init(hex: "#F4F4F4")
-        static let lightGray: UIColor   = .init(hex: "#F4F4F4", alpha: 0.5)
-        static let yellow: UIColor      = .init(hex: "#FED702")
-        static let stroke: UIColor      = .init(hex: "#4D555E")
-        static let gray: UIColor        = .init(hex: "#272729")
-        static let red: UIColor         = .init(hex: "#D70015")
+        static let backgroundPrimary: UIColor = UIColor { traits in
+            return traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#040404")
+                : UIColor(hex: "#1C1F28")
+        }
+        
+        static let backgroundSecondary: UIColor = UIColor { traits in
+            return traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#1C1C1C")
+                : UIColor(hex: "#262F3B")
+        }
+        
+        static let primaryColor: UIColor = UIColor { traits in
+            return traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#FFFFFF")
+                : UIColor(hex: "#E8E9F0")
+        }
+        
+        static let secondaryColor: UIColor = UIColor { traits in
+            return traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#A0A0A0")
+                : UIColor(hex: "#858FA3")
+        }
+        
+        static let tertiaryColor: UIColor = UIColor { traits in
+            return traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#4F4F4F")
+                : UIColor(hex: "#4D535E")
+        }
+
+        static let accentColor: UIColor = UIColor { traits in
+            return traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#F4BA42")
+                : UIColor(hex: "#F4C153")
+        }
     }
 }

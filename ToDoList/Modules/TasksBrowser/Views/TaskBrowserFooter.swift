@@ -6,7 +6,7 @@ final class TaskBrowserFooter: UIView {
     
     private lazy var progressLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Resources.Colors.white
+        label.textColor = Resources.Colors.primaryColor
         label.font = UIFont.systemFont(ofSize: 11, weight: .bold)
         return label
     }()
@@ -14,7 +14,7 @@ final class TaskBrowserFooter: UIView {
     private lazy var createTaskImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "square.and.pencil")
-        imageView.tintColor = Resources.Colors.lightGray
+        imageView.tintColor = Resources.Colors.secondaryColor
         return imageView
     }()
     
@@ -32,11 +32,11 @@ final class TaskBrowserFooter: UIView {
 extension TaskBrowserFooter {
     
     func toggleTaskCreationView(_ isActive: Bool) {
-        createTaskImageView.tintColor = isActive ? Resources.Colors.yellow : Resources.Colors.lightGray
+        createTaskImageView.tintColor = isActive ? Resources.Colors.accentColor : Resources.Colors.secondaryColor
         createTaskImageView.isUserInteractionEnabled = isActive
     }
     
-    func updateCountLabel(items: [TaskDetailsEntity]) {
+    func updateCountLabel(items: [TaskDetailsModel]) {
         let completedItems = items.filter{ $0.isCompleted }
         progressLabel.text = !items.isEmpty ? "\(completedItems.count) of \(items.count) completed" : ""
     }
@@ -44,7 +44,7 @@ extension TaskBrowserFooter {
 
 private extension TaskBrowserFooter {
     func setupLayout() {
-        backgroundColor = Resources.Colors.gray
+        backgroundColor = Resources.Colors.backgroundSecondary
         
         addSubview(progressLabel)
         addSubview(createTaskImageView)

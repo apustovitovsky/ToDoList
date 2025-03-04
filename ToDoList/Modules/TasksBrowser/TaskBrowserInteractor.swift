@@ -3,28 +3,28 @@ import Foundation
 protocol TaskBrowserInteractorInput: AnyObject {
     func addTask()
     func updateTasks()
-    func deleteTask(_ task: TaskDetailsEntity)
+    func deleteTask(_ model: TaskDetailsModel)
     func toggleCompletion(id: UUID)
 }
 
 final class TaskBrowserInteractor {
 
     weak var presenter: TaskBrowserInteractorOutput?
-    var entity: TaskBrowserEntity
+    var model: TaskBrowserModel
     private let storageManager = TaskStorageManager.shared
     private let networkService = TaskNetworkService.shared
     
-    init(entity: TaskBrowserEntity) {
-        self.entity = entity
+    init(model: TaskBrowserModel) {
+        self.model = model
     }
 }
 
 extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     
     func addTask() {
-        let newTask = TaskDetailsEntity()
-        entity.state = .creating
-        configure(with: entity)
+        let newTask = TaskDetailsModel.createEmpty
+        model.state = .creating
+        configure(with: model)
         
         storageManager.createTasks([newTask]) { [weak self] in
             self?.updateTasks()
@@ -42,14 +42,14 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     }
     
     func updateTasks() {
-        entity.state = .updating
-        configure(with: entity)
+        model.state = .updating
+        configure(with: model)
         
         storageManager.updateTasks { [weak self] result in
             guard let self = self, case .success(let tasks) = result else { return }
-            self.entity.state = .normal
-            self.entity.items = tasks
-            self.configure(with: entity)
+            self.model.state = .normal
+            self.model.items = tasks
+            self.configure(with: model)
             
             if tasks.isEmpty {
                 self.updateTasksFromNetwork()
@@ -57,9 +57,9 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
         }
     }
     
-    func deleteTask(_ task : TaskDetailsEntity) {
-        entity.state = .deleting
-        configure(with: entity)
+    func deleteTask(_ task : TaskDetailsModel) {
+        model.state = .deleting
+        configure(with: model)
         
         storageManager.deleteTasks([task]) { [weak self] in
             self?.updateTasks()
@@ -67,7 +67,7 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     }
     
     func toggleCompletion(id: UUID) {
-        guard var task = entity.items.first(where: { $0.id == id }) else { return }
+        guard var task = model.items.first(where: { $0.id == id }) else { return }
         task.isCompleted.toggle()
         
         storageManager.modifyTasks([task]) { [weak self] in
@@ -77,8 +77,8 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
 }
 
 private extension TaskBrowserInteractor {
-    func configure(with entity: TaskBrowserEntity) {
-        presenter?.configure(with: entity)
+    func configure(with model: TaskBrowserModel) {
+        presenter?.configure(with: model)
     }
 }
 

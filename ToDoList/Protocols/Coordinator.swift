@@ -1,12 +1,13 @@
+import UIKit
+
 protocol Coordinator {
-    associatedtype Option
     func start()
-    func start(with option: Option?)
+    func start(with option: LaunchOption?)
 }
 
 extension Coordinator {
     func start() {
         start(with: nil)
     }
-    func start(with option: Option?) {}
 }
+

@@ -1,34 +1,34 @@
 protocol TaskDetailsInteractorInput: AnyObject {
     func moduleDidLoad()
-    func titleDidChange(_ title: String)
-    func contentDidChange(_ content: String)
+    func titleDidChange(_: String)
+    func contentDidChange(_: String)
     func editingDidFinish()
 }
 
 final class TaskDetailsInteractor {
     weak var presenter: TaskDetailsInteractorOutput?
-    var entity: TaskDetailsEntity
+    var model: TaskDetailsModel
     let service = TaskStorageManager.shared
     
-    init(entity: TaskDetailsEntity) {
-        self.entity = entity
+    init(model: TaskDetailsModel) {
+        self.model = model
     }
 }
 
 extension TaskDetailsInteractor: TaskDetailsInteractorInput {
     func editingDidFinish() {
-        service.modifyTasks([entity], completion: nil)
+        service.modifyTasks([model], completion: nil)
     }
     
     func titleDidChange(_ title: String) {
-        entity.title = title
+        model.title = title
     }
     
     func contentDidChange(_ content: String) {
-        entity.content = content
+        model.content = content
     }
     
     func moduleDidLoad() {
-        presenter?.configure(with: entity)
+        presenter?.configure(with: model)
     }
 }

@@ -10,7 +10,8 @@ final class AppNavigationController: UINavigationController {
 
 private extension AppNavigationController {
     func setupUI() {
-        navigationBar.tintColor = Resources.Colors.yellow
+        navigationBar.tintColor = Resources.Colors.accentColor
+
     }
 }
 

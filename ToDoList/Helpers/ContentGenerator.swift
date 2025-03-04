@@ -1,6 +1,6 @@
 import Foundation
 
-struct SentenseGenerator {
+struct ContentGenerator {
   
     func generateSentense(wordCount: Int) -> String {
         guard wordCount > 0 else { return "" }
@@ -11,7 +11,7 @@ struct SentenseGenerator {
     }
     
     func randomWord(syllables: Int) -> String {
-        let syllableShortParts: [String] = [
+        let syllableTwoLetters: [String] = [
             "lo", "re", "ip", "su", "do", "la", "si", "ta", "co", "se",
             "tu", "ad", "ci", "el", "it", "mo", "di", "po", "in", "la",
             "bo", "ma", "ni", "tr", "ex", "er", "te", "ul", "lam", "co",
@@ -19,7 +19,7 @@ struct SentenseGenerator {
             "re", "hen", "der", "vol", "up", "ta", "te", "ve", "li", "es"
         ]
         
-        let syllableMidParts: [String] = [
+        let syllableThreeLetters: [String] = [
             "lor", "rem", "sum", "dor", "lav", "siv", "con", "tur", "ad", "ipi",
             "cing", "sed", "mor", "div", "temp", "por", "den", "ute", "bor", "rev",
             "mag", "nat", "ali", "quav", "ime", "mir", "nim", "ver", "quis", "nosc",
@@ -27,7 +27,7 @@ struct SentenseGenerator {
             "ris", "niv", "sim", "lix", "quip", "com", "mord", "ser", "quat", "duis"
         ]
         
-        let syllableLongParts: [String] = [
+        let syllableFourLetters: [String] = [
             "lorin", "emix", "ipus", "summ", "dori", "lavo", "siva", "tami", "conv", "sect",
             "turi", "adel", "ipid", "cingo", "elor", "itiu", "sedo", "mori", "divu", "temp",
             "pori", "inal", "civo", "deno", "uter", "lavi", "bore", "revi", "etum", "magn",
@@ -37,7 +37,7 @@ struct SentenseGenerator {
         guard syllables > 0 else { return "" }
         
         let word = (0..<syllables).map { _ in
-            let pool = [syllableShortParts, syllableMidParts, syllableLongParts].randomElement() ?? []
+            let pool = [syllableTwoLetters, syllableThreeLetters, syllableFourLetters].randomElement() ?? []
             return pool.randomElement() ?? ""
         }.joined()
         

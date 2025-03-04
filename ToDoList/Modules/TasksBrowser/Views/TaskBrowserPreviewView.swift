@@ -12,7 +12,7 @@ final class TaskBrowserPreviewView: UIView {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        label.textColor = Resources.Colors.white
+        label.textColor = Resources.Colors.primaryColor
         return label
     }()
 
@@ -20,18 +20,18 @@ final class TaskBrowserPreviewView: UIView {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .light)
         label.numberOfLines = 0
-        label.textColor = Resources.Colors.white
+        label.textColor = Resources.Colors.primaryColor
         return label
     }()
 
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .light)
-        label.textColor = Resources.Colors.lightGray
+        label.textColor = Resources.Colors.secondaryColor
         return label
     }()
     
-    init(with task: TaskDetailsEntity) {
+    init(with task: TaskDetailsModel) {
         super.init(frame: .zero)
         setupIU(with: task)
         setupSubviews()
@@ -46,8 +46,8 @@ final class TaskBrowserPreviewView: UIView {
 
 private extension TaskBrowserPreviewView {
     
-    func setupIU(with task: TaskDetailsEntity) {
-        backgroundColor = Resources.Colors.gray
+    func setupIU(with task: TaskDetailsModel) {
+        backgroundColor = Resources.Colors.backgroundSecondary
         layer.cornerRadius = Resources.Constants.cornerRadius
         clipsToBounds = true
         titleLabel.attributedText = NSAttributedString(

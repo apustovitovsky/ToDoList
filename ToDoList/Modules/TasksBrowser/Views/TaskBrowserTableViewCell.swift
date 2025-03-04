@@ -9,7 +9,7 @@ final class TaskBrowserTableViewCell: UITableViewCell {
 
     private lazy var checkboxImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.tintColor = Resources.Colors.lightGray
+        imageView.tintColor = Resources.Colors.tertiaryColor
         imageView.isUserInteractionEnabled = true
         return imageView
     }()
@@ -24,7 +24,7 @@ final class TaskBrowserTableViewCell: UITableViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        label.textColor = Resources.Colors.white
+        label.textColor = Resources.Colors.primaryColor
         return label
     }()
 
@@ -32,14 +32,14 @@ final class TaskBrowserTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .light)
         label.numberOfLines = 0
-        label.textColor = Resources.Colors.white
+        label.textColor = Resources.Colors.primaryColor
         return label
     }()
 
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .light)
-        label.textColor = Resources.Colors.lightGray
+        label.textColor = Resources.Colors.secondaryColor
         return label
     }()
 
@@ -55,7 +55,7 @@ final class TaskBrowserTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with task: TaskDetailsEntity) {
+    func configure(with task: TaskDetailsModel) {
         let isCompleted = task.isCompleted
 
         let attributedTitle = NSMutableAttributedString(
@@ -72,7 +72,7 @@ final class TaskBrowserTableViewCell: UITableViewCell {
 
         dateLabel.text = Date.formatted(date: task.createdAt)
         checkboxImageView.image = UIImage(systemName: isCompleted ? "checkmark.circle" : "circle")
-        checkboxImageView.tintColor = isCompleted ? Resources.Colors.yellow : Resources.Colors.lightGray
+        checkboxImageView.tintColor = isCompleted ? Resources.Colors.accentColor : Resources.Colors.tertiaryColor
 
         if let searchText = getSearchText?(), !searchText.isEmpty {
             applyHighlight(to: attributedTitle, pattern: searchText)
@@ -91,7 +91,7 @@ final class TaskBrowserTableViewCell: UITableViewCell {
 private extension TaskBrowserTableViewCell {
     
     func setupIU() {
-        backgroundColor = Resources.Colors.black
+        backgroundColor = Resources.Colors.backgroundPrimary
         selectionStyle = .none
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(checkboxTapped))
         addGestureRecognizer(tapGesture)
@@ -123,7 +123,7 @@ private extension TaskBrowserTableViewCell {
     func getAttributes(for isCompleted: Bool, isTitle: Bool) -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [:]
         if isCompleted {
-            attributes[.foregroundColor] = Resources.Colors.lightGray
+            attributes[.foregroundColor] = Resources.Colors.secondaryColor
             if isTitle {
                 attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
             }
@@ -138,8 +138,8 @@ private extension TaskBrowserTableViewCell {
         while let range = fullText.range(of: pattern.lowercased(), options: [], range: Range(searchRange, in: fullText)) {
             let nsRange = NSRange(range, in: fullText)
             attributedString.addAttributes([
-                .backgroundColor: Resources.Colors.yellow,
-                .foregroundColor: Resources.Colors.black
+                .backgroundColor: Resources.Colors.accentColor,
+                .foregroundColor: Resources.Colors.backgroundPrimary
             ], range: nsRange)
             searchRange = NSRange(location: nsRange.upperBound, length: fullText.utf16.count - nsRange.upperBound)
         }

@@ -11,7 +11,7 @@ final class TaskDetailsView: UIView {
     
     private let titleTextField: UITextField = {
         let textField = UITextField()
-        textField.textColor = Resources.Colors.white
+        textField.textColor = Resources.Colors.primaryColor
         textField.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         textField.backgroundColor = .clear
         textField.borderStyle = .none
@@ -19,22 +19,22 @@ final class TaskDetailsView: UIView {
         textField.attributedPlaceholder = NSAttributedString(
             string: Resources.Strings.titlePlaceholder,
             attributes: [
-            .foregroundColor: Resources.Colors.gray,
-            .font: UIFont.systemFont(ofSize: 34)
-        ])
+                .foregroundColor: Resources.Colors.backgroundSecondary,
+                .font: UIFont.systemFont(ofSize: 34)
+            ])
         return textField
     }()
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = Resources.Colors.lightGray
+        label.textColor = Resources.Colors.secondaryColor
         label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         return label
     }()
     
     private let contentTextView: UITextView = {
         let textView = UITextView()
-        textView.textColor = Resources.Colors.white
+        textView.textColor = Resources.Colors.primaryColor
         textView.font = UIFont.systemFont(ofSize: 20, weight: .regular)
         textView.backgroundColor = .clear
         return textView
@@ -53,10 +53,10 @@ final class TaskDetailsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with entity: TaskDetailsEntity) {
-        titleTextField.text = entity.title
-        dateLabel.text = Date.formatted(date: entity.createdAt)
-        contentTextView.text = entity.content
+    func configure(with model: TaskDetailsModel) {
+        titleTextField.text = model.title
+        dateLabel.text = Date.formatted(date: model.createdAt)
+        contentTextView.text = model.content
     }
 }
 
@@ -68,7 +68,7 @@ private extension TaskDetailsView {
     }
     
     func setupUI() {
-        backgroundColor = Resources.Colors.black
+        backgroundColor = Resources.Colors.backgroundPrimary
     }
     
     func setupSubviews() {
