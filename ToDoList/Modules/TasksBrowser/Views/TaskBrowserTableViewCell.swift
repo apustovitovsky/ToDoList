@@ -3,9 +3,13 @@ import UIKit
 final class TaskBrowserTableViewCell: UITableViewCell {
     
     static let identifier = "TasksViewCell"
-
-    var onCheckboxTapped: (() -> Void)?
-    var getSearchText: (() -> String)?
+    var model: TaskDetailsModel? {
+        didSet {
+            guard let model else { return }
+            configure(with: model)
+        }
+    }
+    var filterPrompt: String = ""
 
     private lazy var checkboxImageView: UIImageView = {
         let imageView = UIImageView()
@@ -23,7 +27,7 @@ final class TaskBrowserTableViewCell: UITableViewCell {
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         label.textColor = Resources.Colors.primaryColor
         return label
     }()
@@ -55,36 +59,40 @@ final class TaskBrowserTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with task: TaskDetailsModel) {
-        let isCompleted = task.isCompleted
-
+    func configure(with model: TaskDetailsModel) {
         let attributedTitle = NSMutableAttributedString(
-            string: task.title.isEmpty ? Resources.Strings.titleEmptyTask : task.title,
-            attributes: getAttributes(for: isCompleted, isTitle: true)
+            string: model.title.isEmpty ? Resources.Strings.titleEmptyTask : model.title,
+            attributes: getTitleAttributes(for: model.isCompleted)
         )
         let attributedContent = NSMutableAttributedString(
-            string: task.content,
-            attributes: getAttributes(for: isCompleted, isTitle: false)
+            string: model.content,
+            attributes: getContentAttributes(for: model.isCompleted)
         )
-
+        dateLabel.text = Date.formatted(date: model.createdAt)
+        
+        checkboxImageView.image = model.isCompleted
+        ? Resources.Images.taskCheckboxCompleted
+        : Resources.Images.taskCheckbox
+        
+        checkboxImageView.tintColor = model.isCompleted
+        ? Resources.Colors.accentColor
+        : Resources.Colors.tertiaryColor
+        
         titleLabel.attributedText = attributedTitle
         contentLabel.attributedText = attributedContent
 
-        dateLabel.text = Date.formatted(date: task.createdAt)
-        checkboxImageView.image = UIImage(systemName: isCompleted ? "checkmark.circle" : "circle")
-        checkboxImageView.tintColor = isCompleted ? Resources.Colors.accentColor : Resources.Colors.tertiaryColor
-
-        if let searchText = getSearchText?(), !searchText.isEmpty {
-            applyHighlight(to: attributedTitle, pattern: searchText)
-            applyHighlight(to: attributedContent, pattern: searchText)
-
-            titleLabel.attributedText = attributedTitle
-            contentLabel.attributedText = attributedContent
+        if filterPrompt.count > 1 {
+            applyHighlight(to: attributedTitle, pattern: filterPrompt)
+            applyHighlight(to: attributedContent, pattern: filterPrompt)
         }
+        
+        titleLabel.attributedText = attributedTitle
+        contentLabel.attributedText = attributedContent
     }
-
-    @objc private func checkboxTapped() {
-        onCheckboxTapped?()
+    
+    func updateCheckbox(for isCompleted: Bool) {
+        checkboxImageView.image = isCompleted ? Resources.Images.taskCheckboxCompleted : Resources.Images.taskCheckbox
+        checkboxImageView.tintColor = isCompleted ? Resources.Colors.accentColor : Resources.Colors.tertiaryColor
     }
 }
 
@@ -93,8 +101,6 @@ private extension TaskBrowserTableViewCell {
     func setupIU() {
         backgroundColor = Resources.Colors.backgroundPrimary
         selectionStyle = .none
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(checkboxTapped))
-        addGestureRecognizer(tapGesture)
     }
     
     func setupSubviews() {
@@ -120,13 +126,19 @@ private extension TaskBrowserTableViewCell {
         ])
     }
     
-    func getAttributes(for isCompleted: Bool, isTitle: Bool) -> [NSAttributedString.Key: Any] {
+    func getTitleAttributes(for isCompleted: Bool) -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = [:]
         if isCompleted {
             attributes[.foregroundColor] = Resources.Colors.secondaryColor
-            if isTitle {
-                attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
-            }
+            attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+        }
+        return attributes
+    }
+    
+    func getContentAttributes(for isCompleted: Bool) -> [NSAttributedString.Key: Any] {
+        var attributes: [NSAttributedString.Key: Any] = [:]
+        if isCompleted {
+            attributes[.foregroundColor] = Resources.Colors.secondaryColor
         }
         return attributes
     }
@@ -146,3 +158,140 @@ private extension TaskBrowserTableViewCell {
     }
 }
 
+//import UIKit
+
+//final class TaskBrowserTableViewCell: UITableViewCell {
+//    
+//    static let identifier = "TasksViewCell"
+//    
+//    var model: TaskDetailsModel? {
+//        didSet {
+//            guard let model else { return }
+//            configure(with: model)
+//        }
+//    }
+//    
+//    var filterPrompt: String = "" {
+//        didSet {
+//            guard let model else { return }
+//            configure(with: model)  // Перерисовываем при изменении
+//        }
+//    }
+//
+//    private lazy var checkboxImageView: UIImageView = {
+//        let imageView = UIImageView()
+//        imageView.tintColor = Resources.Colors.tertiaryColor
+//        imageView.isUserInteractionEnabled = true
+//        return imageView
+//    }()
+//    
+//    private lazy var stackView: UIStackView = {
+//        let stackView = UIStackView()
+//        stackView.axis = .vertical
+//        stackView.spacing = Resources.Constants.paddingSmall
+//        return stackView
+//    }()
+//
+//    private lazy var titleLabel: UILabel = createLabel(fontSize: 18, weight: .medium)
+//    private lazy var contentLabel: UILabel = createLabel(fontSize: 14, weight: .light, lines: 0)
+//    private lazy var dateLabel: UILabel = createLabel(fontSize: 12, weight: .light, color: Resources.Colors.secondaryColor)
+//
+//    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+//        super.init(style: style, reuseIdentifier: reuseIdentifier)
+//        setupUI()
+//        setupSubviews()
+//        setupConstraints()
+//    }
+//
+//    @available(*, unavailable)
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//
+//    func configure(with model: TaskDetailsModel) {
+//        titleLabel.attributedText = formattedText(model.title.isEmpty ? Resources.Strings.titleEmptyTask : model.title, isCompleted: model.isCompleted)
+//        contentLabel.attributedText = formattedText(model.content, isCompleted: model.isCompleted)
+//        dateLabel.text = Date.formatted(date: model.createdAt)
+//        updateCheckbox(for: model.isCompleted)
+//    }
+//}
+//
+//// MARK: - Private Methods
+//private extension TaskBrowserTableViewCell {
+//    
+//    func setupUI() {
+//        backgroundColor = Resources.Colors.backgroundPrimary
+//        selectionStyle = .none
+//    }
+//    
+//    func setupSubviews() {
+//        [checkboxImageView, stackView].forEach {
+//            contentView.addSubview($0)
+//            $0.translatesAutoresizingMaskIntoConstraints = false
+//        }
+//        [titleLabel, contentLabel, dateLabel].forEach {
+//            stackView.addArrangedSubview($0)
+//        }
+//    }
+//    
+//    func setupConstraints() {
+//        NSLayoutConstraint.activate([
+//            checkboxImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Resources.Constants.paddingMedium),
+//            checkboxImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Resources.Constants.paddingMedium),
+//            checkboxImageView.widthAnchor.constraint(equalToConstant: Resources.Constants.checkboxSize),
+//            checkboxImageView.heightAnchor.constraint(equalToConstant: Resources.Constants.checkboxSize),
+//            
+//            stackView.leadingAnchor.constraint(equalTo: checkboxImageView.trailingAnchor, constant: Resources.Constants.paddingMedium),
+//            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Resources.Constants.paddingMedium),
+//            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Resources.Constants.paddingMedium),
+//            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Resources.Constants.paddingMedium)
+//        ])
+//    }
+//
+//    func createLabel(fontSize: CGFloat, weight: UIFont.Weight, color: UIColor = Resources.Colors.primaryColor, lines: Int = 1) -> UILabel {
+//        let label = UILabel()
+//        label.font = UIFont.systemFont(ofSize: fontSize, weight: weight)
+//        label.textColor = color
+//        label.numberOfLines = lines
+//        return label
+//    }
+//
+//    func formattedText(_ text: String, isCompleted: Bool) -> NSAttributedString {
+//        let attributes = getTextAttributes(for: isCompleted)
+//        let attributedText = NSMutableAttributedString(string: text, attributes: attributes)
+//        
+//        if filterPrompt.count > 1 {
+//            applyHighlight(to: attributedText, pattern: filterPrompt)
+//        }
+//        
+//        return attributedText
+//    }
+//
+//    func updateCheckbox(for isCompleted: Bool) {
+//        checkboxImageView.image = isCompleted ? Resources.Images.taskCheckboxCompleted : Resources.Images.taskCheckbox
+//        checkboxImageView.tintColor = isCompleted ? Resources.Colors.accentColor : Resources.Colors.tertiaryColor
+//    }
+//
+//    func getTextAttributes(for isCompleted: Bool) -> [NSAttributedString.Key: Any] {
+//        var attributes: [NSAttributedString.Key: Any] = [:]
+//        if isCompleted {
+//            attributes[.foregroundColor] = Resources.Colors.secondaryColor
+//            attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+//        }
+//        return attributes
+//    }
+//    
+//    func applyHighlight(to attributedString: NSMutableAttributedString, pattern: String) {
+//        let fullText = attributedString.string.lowercased()
+//        var searchRange = NSRange(location: 0, length: fullText.utf16.count)
+//
+//        while let range = fullText.range(of: pattern.lowercased(), options: [], range: Range(searchRange, in: fullText)) {
+//            let nsRange = NSRange(range, in: fullText)
+//            attributedString.addAttributes([
+//                .backgroundColor: Resources.Colors.accentColor,
+//                .foregroundColor: Resources.Colors.backgroundPrimary
+//            ], range: nsRange)
+//            searchRange = NSRange(location: nsRange.upperBound, length: fullText.utf16.count - nsRange.upperBound)
+//        }
+//    }
+//}

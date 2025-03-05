@@ -1,8 +1,3 @@
-//
-//  Strings.swift
-//  ToDoList
-//
-
 extension Resources {
     enum Strings {
         static let dateFormat                   = "dd/MM/yyyy"

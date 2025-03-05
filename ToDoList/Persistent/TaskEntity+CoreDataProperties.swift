@@ -28,7 +28,7 @@ extension TaskEntity : Identifiable {
         )
     }
     
-    func update(from model: TaskDetailsModel) {
+    func update(with model: TaskDetailsModel) {
         id = model.id
         title = model.title
         content = model.content

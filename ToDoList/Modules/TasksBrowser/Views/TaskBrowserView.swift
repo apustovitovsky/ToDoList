@@ -2,24 +2,20 @@ import UIKit
 
 final class TaskBrowserView: UIView {
     
-    struct Handlers {
-        var createTask: Action
-        var editTask: Handler<TaskDetailsModel>
-        var deleteTask: Handler<TaskDetailsModel>
-        var toggleCompletion: Handler<UUID>
-    }
+    private lazy var headerView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, settingsButton])
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+        return stackView
+    }()
     
-    var handlers: Handlers?
-    var tasks: [TaskDetailsModel] = []
-    var taskItemsFiltered: [TaskDetailsModel] {
-        return !searchText.isEmpty
-        ? tasks.filter {
-            $0.title.lowercased().contains(searchText.lowercased()) ||
-            $0.content.lowercased().contains(searchText.lowercased())
-        }
-        : tasks
-    }
-    var searchText: String = ""
+    lazy var settingsButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(Resources.Images.settings, for: .normal)
+        button.tintColor = Resources.Colors.accentColor
+        return button
+    }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -30,25 +26,22 @@ final class TaskBrowserView: UIView {
         return label
      }()
     
-    private lazy var searchBar: UISearchBar = {
+    lazy var searchBar: UISearchBar = {
         let searchBar = TaskBrowserSearchBar()
-        searchBar.delegate = self
+        searchBar.showsBookmarkButton = true
+        searchBar.setImage(UIImage(systemName: "mic.fill"), for: .bookmark, state: .normal)
         return searchBar
     }()
 
-    private lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let tableView = TaskBrowserTableView()
         tableView.register(TaskBrowserTableViewCell.self, forCellReuseIdentifier: TaskBrowserTableViewCell.identifier)
-        tableView.delegate = self
-        tableView.dataSource = self
+
         return tableView
     }()
     
-    private lazy var footerView: TaskBrowserFooter = {
+    lazy var footerView: TaskBrowserFooter = {
         let view = TaskBrowserFooter()
-        view.onTaskCreateTap = { [weak self] in
-            self?.handlers?.createTask()
-        }
         return view
     }()
     
@@ -65,93 +58,10 @@ final class TaskBrowserView: UIView {
     }
 }
 
-extension TaskBrowserView: TaskBrowserPresenterOutput {
-    func configure(with entity: TaskBrowserModel) {
-        tasks = entity.items
-        print(entity.state ?? "")
-        footerView.toggleTaskCreationView(entity.state == .normal)
-        refreshUI()
-    }
-}
-
-extension TaskBrowserView: UITableViewDataSource, UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return taskItemsFiltered.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskBrowserTableViewCell.identifier, for: indexPath) as? TaskBrowserTableViewCell
-        else {
-            return UITableViewCell()
-        }
-        let task = taskItemsFiltered[indexPath.row]
-        
-        cell.onCheckboxTapped = { [weak self] in
-            self?.handlers?.toggleCompletion(task.id)
-        }
-        cell.getSearchText = { [weak self] in
-            self?.searchText ?? String()
-        }
-        cell.configure(with: task)
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        
-        let task = taskItemsFiltered[indexPath.row]
-        
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
-            guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
-    
-            let view = TaskBrowserPreviewView(with: task)
-            let viewController = UIViewController()
-            viewController.view = view
-            viewController.preferredContentSize = CGSize(
-                width: cell.frame.width - Resources.Constants.paddingMedium - Resources.Constants.checkboxSize,
-                height: cell.frame.height
-            )
-            return viewController
-            
-        }, actionProvider: { _ in
-            let edit = UIAction(
-                title: Resources.Strings.contextMenuEdit,
-                image: UIImage(systemName: "square.and.pencil")) { [weak self] _ in
-                self?.handlers?.editTask(task)
-            }
-            let share = UIAction(
-                title: Resources.Strings.contextMenuShare,
-                image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in
-                self?.handlers?.editTask(task)
-            }
-            let delete = UIAction(
-                title: Resources.Strings.contextMenuDelete,
-                image: UIImage(systemName: "trash"),
-                attributes: .destructive) { [weak self] _ in
-                self?.handlers?.deleteTask(task)
-            }
-            return UIMenu(title: "", children: [edit, share, delete])
-        })
-    }
-}
-
-extension TaskBrowserView: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.searchText = searchText.lowercased()
-        refreshUI()
-    }
-}
-
 private extension TaskBrowserView {
-    
-    func refreshUI() {
-        footerView.updateCountLabel(items: taskItemsFiltered)
-        tableView.reloadData()
-    }
-    
+ 
     func setupSubviews() {
-        [titleLabel, searchBar, tableView, footerView].forEach {
+        [headerView, searchBar, tableView, footerView].forEach {
             addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -159,15 +69,19 @@ private extension TaskBrowserView {
     
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Resources.Constants.paddingMedium),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Resources.Constants.paddingMedium),
-            searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Resources.Constants.paddingSmall),
-            searchBar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Resources.Constants.paddingMedium),
-            searchBar.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Resources.Constants.paddingMedium),
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Resources.Constants.paddingSmall),
+            headerView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Resources.Constants.paddingMedium),
+            headerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Resources.Constants.paddingMedium),
+            headerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Resources.Constants.paddingMedium),
+            
+            searchBar.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: Resources.Constants.paddingSmall),
+            searchBar.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Resources.Constants.paddingSmall),
+            searchBar.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Resources.Constants.paddingSmall),
+            
+            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: Resources.Constants.paddingMedium),
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: footerView.topAnchor),
+            
             footerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             footerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             footerView.bottomAnchor.constraint(equalTo: bottomAnchor),

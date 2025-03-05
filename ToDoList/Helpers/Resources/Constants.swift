@@ -1,12 +1,6 @@
-//
-//  Constraints.swift
-//  ToDoList
-//
-
 import Foundation
 
 extension Resources {
-    
     enum Constants {
         static let footerHeight: CGFloat    = 83
         static let cornerRadius: CGFloat    = 10

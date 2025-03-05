@@ -1,8 +1,3 @@
-//
-//  UIColor+Extension.swift
-//  ToDoList
-//
-
 import UIKit
 
 extension UIColor {

@@ -1,9 +1,9 @@
 import Foundation
 import CoreData
 
-final class TaskStorageManager {
+final class TaskPersistentService {
 
-    static let shared: TaskStorageManager = .init()
+    static let shared: TaskPersistentService = .init()
     private init() {}
     private lazy var container: NSPersistentContainer = {
 
@@ -19,7 +19,7 @@ final class TaskStorageManager {
     func createTasks(_ tasks: [TaskDetailsModel], completion: Action?) {
         container.performBackgroundTask { context in
             tasks.forEach { task in
-                let _ = TaskEntity(context: context).update(from: task)
+                TaskEntity(context: context).update(with: task)
             }
             do {
                 try context.save()
@@ -82,9 +82,7 @@ final class TaskStorageManager {
             do {
                 let results = try context.fetch(request)
                 results.forEach { context.delete($0) }
-
                 try context.save()
-
                 DispatchQueue.main.async {
                     completion?()
                 }

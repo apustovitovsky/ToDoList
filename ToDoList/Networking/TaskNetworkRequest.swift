@@ -23,7 +23,7 @@ struct RandomTaskNetworkRequest: NetworkRequest {
     var method: HTTPMethod = .get
     var queryItems: [URLQueryItem]? = .init()
     
-    init(limit: Int = 3) {
+    init(limit: Int = 4) {
         endpoint = Resources.Strings.apiRandomTodosEndpoint + "/\(limit)"
     }
 }

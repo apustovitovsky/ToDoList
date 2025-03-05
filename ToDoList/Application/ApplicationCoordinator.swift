@@ -3,9 +3,11 @@ import Foundation
 final class ApplicationCoordinator: Coordinator {
     
     private let router: Router
+    private let themeProvider: ThemeProvider
     
-    init(router: Router) {
+    init(router: Router, themeProvider: ThemeProvider) {
         self.router = router
+        self.themeProvider = themeProvider
     }
     
     func start(with option: LaunchOption?) {
@@ -46,7 +48,9 @@ private extension ApplicationCoordinator {
     }
     
     func showSettings(animated: Bool) {
-        let step = SettingsFactory().makeStep()
+        let step = SettingsFactory(
+            themeProvider: themeProvider
+        ).makeStep()
         router.push(step, animated: animated)
     }
 }

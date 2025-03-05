@@ -35,7 +35,7 @@ final class TaskDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupHandlers()
+        setupDelegates()
         presenter.moduleDidLoad()
     }
 }
@@ -46,15 +46,23 @@ extension TaskDetailsViewController: TaskDetailsPresenterOutput {
     }
 }
 
+extension TaskDetailsViewController: UITextFieldDelegate {
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        guard textField == customView.titleTextField else { return }
+        presenter.titleDidChange(textField.text ?? "")
+    }
+}
+
+extension TaskDetailsViewController: UITextViewDelegate {
+    func textViewDidChange(_ contentView: UITextView) {
+        guard contentView == customView.contentTextView else { return }
+        presenter.contentDidChange(contentView.text)
+    }
+}
+
 private extension TaskDetailsViewController {
-    func setupHandlers() {
-        customView.handlers = .init(
-            titleDidChange: { [weak self] title in
-                self?.presenter.titleDidChange(title)
-            },
-            contentDidChange: { [weak self] content in
-                self?.presenter.contentDidChange(content)
-            }
-        )
+    func setupDelegates() {
+        customView.titleTextField.delegate = self
+        customView.contentTextView.delegate = self
     }
 }

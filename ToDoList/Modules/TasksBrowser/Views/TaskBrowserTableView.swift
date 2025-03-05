@@ -18,9 +18,8 @@ private extension TaskBrowserTableView {
     func setupUI() {
         backgroundColor = Resources.Colors.backgroundPrimary
         keyboardDismissMode = .onDrag
-        
         separatorStyle = .singleLine
-        separatorColor = Resources.Colors.secondaryColor
+        separatorColor = Resources.Colors.tertiaryColor
         separatorInset = UIEdgeInsets(
             top: 0,
             left: Resources.Constants.paddingMedium,

@@ -2,14 +2,7 @@ import UIKit
 
 final class TaskDetailsView: UIView {
     
-    struct Handlers {
-        var titleDidChange: Handler<String>
-        var contentDidChange: Handler<String>
-    }
-    
-    var handlers: Handlers?
-    
-    private let titleTextField: UITextField = {
+    let titleTextField: UITextField = {
         let textField = UITextField()
         textField.textColor = Resources.Colors.primaryColor
         textField.font = UIFont.systemFont(ofSize: 34, weight: .bold)
@@ -32,7 +25,7 @@ final class TaskDetailsView: UIView {
         return label
     }()
     
-    private let contentTextView: UITextView = {
+    let contentTextView: UITextView = {
         let textView = UITextView()
         textView.textColor = Resources.Colors.primaryColor
         textView.font = UIFont.systemFont(ofSize: 20, weight: .regular)
@@ -45,7 +38,6 @@ final class TaskDetailsView: UIView {
         setupUI()
         setupSubviews()
         setupConstraints()
-        setupDelegates()
     }
     
     @available(*, unavailable)
@@ -61,11 +53,6 @@ final class TaskDetailsView: UIView {
 }
 
 private extension TaskDetailsView {
-    
-    func setupDelegates() {
-        titleTextField.delegate = self
-        contentTextView.delegate = self
-    }
     
     func setupUI() {
         backgroundColor = Resources.Colors.backgroundPrimary
@@ -99,18 +86,5 @@ private extension TaskDetailsView {
     }
 }
 
-extension TaskDetailsView: UITextFieldDelegate {
-    func textFieldDidChangeSelection(_ textField: UITextField) {
-        guard textField == titleTextField else { return }
-        handlers?.titleDidChange(textField.text ?? "")
-    }
-}
-
-extension TaskDetailsView: UITextViewDelegate {
-    func textViewDidChange(_ contentView: UITextView) {
-        guard contentView == contentTextView else { return }
-        handlers?.contentDidChange(contentView.text)
-    }
-}
 
 

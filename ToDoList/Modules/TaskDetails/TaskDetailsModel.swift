@@ -22,8 +22,8 @@ extension TaskDetailsModel {
     init(from response: TaskNetworkResponse) {
         self.id = UUID()
         self.title = response.todo
-        self.content = ContentGenerator().generateSentense(wordCount: Int.random(in: 9..<12))
-        self.createdAt = Date()
+        self.content = ContentGenerator().generateSentense(wordCount: Int.random(in: 10...14))
+        self.createdAt = Calendar.current.date(byAdding: DateComponents(hour: Int.random(in: -96...0)), to: Date()) ?? Date()
         self.isCompleted = response.completed
     }
 }

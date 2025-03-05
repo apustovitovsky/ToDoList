@@ -1,9 +1,17 @@
 struct SettingsFactory: ModuleFactory {
+    
+    private let themeProvider: ThemeProvider
+    
+    init(themeProvider: ThemeProvider) {
+        self.themeProvider = themeProvider
+    }
+    
     func makeStep(with _: Void) -> RoutingStep<SettingsRouter> {
         let router = SettingsRouter()
         
         let interactor = SettingsInteractor(
-            model: SettingsModel()
+            model: SettingsModel(),
+            themeProvider: themeProvider
         )
         let presenter = SettingsPresenter(
             router: router,

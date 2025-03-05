@@ -11,7 +11,7 @@ final class TaskBrowserInteractor {
 
     weak var presenter: TaskBrowserInteractorOutput?
     var model: TaskBrowserModel
-    private let storageManager = TaskStorageManager.shared
+    private let storageManager = TaskPersistentService.shared
     private let networkService = TaskNetworkService.shared
     
     init(model: TaskBrowserModel) {
@@ -48,7 +48,7 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
         storageManager.updateTasks { [weak self] result in
             guard let self = self, case .success(let tasks) = result else { return }
             self.model.state = .normal
-            self.model.items = tasks
+            self.model.tasks = tasks
             self.configure(with: model)
             
             if tasks.isEmpty {
@@ -67,7 +67,7 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     }
     
     func toggleCompletion(id: UUID) {
-        guard var task = model.items.first(where: { $0.id == id }) else { return }
+        guard var task = model.tasks.first(where: { $0.id == id }) else { return }
         task.isCompleted.toggle()
         
         storageManager.modifyTasks([task]) { [weak self] in

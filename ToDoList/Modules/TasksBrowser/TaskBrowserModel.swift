@@ -3,11 +3,11 @@ import Foundation
 struct TaskBrowserModel {
     
     var state: State?
-    var items: [TaskDetailsModel]
+    var tasks: [TaskDetailsModel]
     
     init(state: State? = nil) {
         self.state = state
-        self.items = []
+        self.tasks = []
     }
 }
 

@@ -7,9 +7,13 @@ class ThemeProvider {
         case dark = 1
     }
     
-    static let shared = ThemeProvider()
+    private weak var window: UIWindow?
     
-    private init() {}
+//    static let shared = ThemeProvider(window: UIWindow)
+    
+    init(window: UIWindow) {
+        self.window = window
+    }
     
     var effectiveTheme: Theme {
         return storedTheme ?? systemTheme ?? .light
@@ -23,27 +27,29 @@ class ThemeProvider {
     }
     
     private var systemTheme: Theme? {
-        guard let window = UIApplication.shared
-            .connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first?
-            .windows
-            .first else { return nil }
+//        guard let window = UIApplication.shared
+//            .connectedScenes
+//            .compactMap({ $0 as? UIWindowScene })
+//            .first?
+//            .windows
+//            .first else { return nil }
         
-        return window.traitCollection.userInterfaceStyle == .dark ? .dark : .light
+        return window?.traitCollection.userInterfaceStyle == .dark ? .dark : .light
     }
     
     func applyTheme() {
-        guard let window = UIApplication.shared
-            .connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first?
-            .windows
-            .first else { return }
+//        guard let window = UIApplication.shared
+//            .connectedScenes
+//            .compactMap({ $0 as? UIWindowScene })
+//            .first?
+//            .windows
+//            .first else { return }
+        
+        guard let window else { return }
         
         UIView.transition(with: window, duration: 0.4, options: .transitionCrossDissolve) { [weak self] in
             guard let theme = self?.effectiveTheme else { return }
-            window.overrideUserInterfaceStyle = theme == .dark ? .dark : .light
+            self?.window?.overrideUserInterfaceStyle = theme == .dark ? .dark : .light
         }
     }
     

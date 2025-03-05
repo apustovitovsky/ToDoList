@@ -39,9 +39,6 @@ final class SettingsViewController: UIViewController {
 private extension SettingsViewController {
     @objc private func didToggleTheme() {
         presenter.didChangeTheme(to: customView.themeSwitch.isOn)
-        ThemeProvider.shared.setupTheme(
-            customView.themeSwitch.isOn ? .dark : .light
-        )
     }
 }
 

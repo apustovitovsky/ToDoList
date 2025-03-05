@@ -9,15 +9,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
         
-        window = UIWindow(windowScene: windowScene)
+        let window = UIWindow(windowScene: windowScene)
         let navigationController = AppNavigationController()
-        window?.rootViewController = navigationController
+        window.rootViewController = navigationController
         
-        coordinator = ApplicationCoordinator(router: DefaultRouter(rootController: navigationController))
-        window?.makeKeyAndVisible()
+        let themeProvider = ThemeProvider(window: window)
+        
+        coordinator = ApplicationCoordinator(
+            router: DefaultRouter(rootController: navigationController),
+            themeProvider: themeProvider
+        )
+        
+        self.window = window
+        window.makeKeyAndVisible()
         
         coordinator?.start()
-        ThemeProvider.shared.applyTheme()
+        themeProvider.applyTheme()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
