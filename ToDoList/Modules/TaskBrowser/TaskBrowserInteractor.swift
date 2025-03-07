@@ -36,22 +36,30 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     }
     
     func viewDidLoad() {
-        model.state = .normal
-        presenter?.configure(with: model)
+        
+//        #if DEBUG
+//        persistentService.deleteAllTasks()
+//        #endif
+        
+        configureView(.loading)
+        fetchTasks()
     }
     
     func fetchTasksFromNetwork(count: Int) {
+        configureView(.loading)
         networkService.fetchTasks(count: count) { [weak self] result in
             guard let self = self, case .success(let tasks) = result else { return }
             persistentService.addTasks(tasks)
+            configureView(.normal)
         }
     }
     
     func fetchTasks() {
         fetchTasks(with: "")
+        configureView(.normal)
         
         if let objects = fetchedResultController.fetchedObjects, objects.isEmpty {
-            self.fetchTasksFromNetwork(count: 5)
+            self.fetchTasksFromNetwork(count: 2)
         }
     }
     
@@ -73,3 +81,10 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     }
 }
 
+private extension TaskBrowserInteractor{
+    
+    func configureView(_ state: TaskBrowserModel.State) {
+        model.state = state
+        presenter?.configure(with: model)
+    }
+}

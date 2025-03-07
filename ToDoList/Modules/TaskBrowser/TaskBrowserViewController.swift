@@ -52,7 +52,7 @@ extension TaskBrowserViewController: TaskBrowserPresenterOutput {
     
     func configure(with model: TaskBrowserModel) {
         customView.footerView.updateTaskCreationImage(model.state == .normal)
-        presenter.fetchTasks()
+        print(model.state)
     }
     
     func reloadData() {
