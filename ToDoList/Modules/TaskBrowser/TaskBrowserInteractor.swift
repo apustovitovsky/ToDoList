@@ -2,7 +2,6 @@ import Foundation
 import CoreData
 
 protocol TaskBrowserInteractorInput: AnyObject {
-    
     var fetchedResultController: NSFetchedResultsController<TaskEntity> { get }
     
     func viewDidLoad()

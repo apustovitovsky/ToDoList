@@ -8,6 +8,7 @@ protocol TaskStorageServiceProtocol {
     func fetchTasksBackground(block: @escaping Handler<[TaskDetailsModel]>)
     func addTasks(_: [TaskDetailsModel])
     func deleteTask(with id: UUID)
+    func deleteAllTasks()
     func modifyTask(_: TaskDetailsModel)
 }
 
@@ -58,7 +59,7 @@ final class TaskStorageService: TaskStorageServiceProtocol {
     func addTasks(_ models: [TaskDetailsModel]) {
         coreDataManager.performBackgroundTask { [weak self] context in
             models.forEach {
-                TaskEntity(context: context).update(by: $0)
+                let _ = TaskEntity(context: context, with: $0)
                 print("added \($0.title )")
             }
             self?.coreDataManager.saveContext(context)
@@ -72,6 +73,15 @@ final class TaskStorageService: TaskStorageServiceProtocol {
                 context.delete(task)
                 self?.coreDataManager.saveContext(context)
             }
+        }
+    }
+    
+    func deleteAllTasks() {
+        coreDataManager.performBackgroundTask { [weak self] context in
+            let fetchRequest: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
+            guard let tasks = try? context.fetch(fetchRequest) else { return }
+            tasks.forEach { context.delete($0) }
+            self?.coreDataManager.saveContext(context)
         }
     }
 

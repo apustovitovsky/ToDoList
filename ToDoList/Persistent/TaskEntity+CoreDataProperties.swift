@@ -8,7 +8,7 @@ extension TaskEntity {
         return NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
     }
 
-    @NSManaged public var id: UUID?
+    @NSManaged public var id: UUID
     @NSManaged public var title: String?
     @NSManaged public var content: String?
     @NSManaged public var isCompleted: Bool
@@ -16,22 +16,29 @@ extension TaskEntity {
 
 }
 
-
-
 extension TaskEntity : Identifiable {
+    
+    convenience init(context: NSManagedObjectContext, with model: TaskDetailsModel) {
+        self.init(context: context)
+        id = UUID()
+        title = model.title
+        content = model.content
+        createdAt = model.createdAt
+        isCompleted = model.isCompleted
+    }
+    
     
     func toModel() -> TaskDetailsModel {
         TaskDetailsModel(
-            id: self.id ?? UUID(),
+            id: self.id,
             title: self.title ?? "",
             content: self.content ?? "",
             createdAt: self.createdAt ?? Date(),
             isCompleted: self.isCompleted
         )
     }
-    
+
     func update(by model: TaskDetailsModel) {
-        id = model.id
         title = model.title
         content = model.content
         createdAt = model.createdAt
