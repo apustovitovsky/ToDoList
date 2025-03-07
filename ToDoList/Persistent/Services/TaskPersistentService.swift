@@ -5,7 +5,7 @@ final class TaskPersistentService {
 
     static let shared: TaskPersistentService = .init()
     private init() {}
-    private lazy var container: NSPersistentContainer = {
+    lazy var container: NSPersistentContainer = {
 
         let container = NSPersistentContainer(name: "ToDoList")
         container.loadPersistentStores{ _, error in
@@ -19,7 +19,7 @@ final class TaskPersistentService {
     func createTasks(_ tasks: [TaskDetailsModel], completion: Action?) {
         container.performBackgroundTask { context in
             tasks.forEach { task in
-                TaskEntity(context: context).update(with: task)
+                TaskEntity(context: context).update(by: task)
             }
             do {
                 try context.save()

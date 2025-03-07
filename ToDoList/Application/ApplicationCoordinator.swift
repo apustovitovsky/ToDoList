@@ -31,7 +31,7 @@ final class ApplicationCoordinator: Coordinator {
 private extension ApplicationCoordinator {
     
     func showTaskList() {
-        let step = TaskBrowserFactory().makeStep()
+        let step = TaskBrowserFactoryB().makeStep()
         
         step.output.showTaskDetails = { [weak self] task in
             self?.showEditTask(with: task, animated: true)

@@ -1,6 +1,8 @@
 import UIKit
+import CoreData
 
 protocol TaskBrowserPresenterOutput: AnyObject {
+    func reloadData()
     func configure(with model: TaskBrowserModel)
 }
 
@@ -8,11 +10,16 @@ final class TaskBrowserViewController: UIViewController {
     
     private let presenter: TaskBrowserPresenterInput
     private lazy var customView = TaskBrowserView()
-    private var filterPrompt: String = ""
-    private var tasks: [TaskDetailsModel] = []
-    private var completedTasks: [TaskDetailsModel] = []
-    private var filteredTasks: [TaskDetailsModel] = []
-    
+    private var fetchedResultController: NSFetchedResultsController<TaskEntity> {
+        presenter.fetchedResultController
+    }
+    private var searchText: String = "" {
+        didSet {
+            debounceFetchTasks()
+        }
+    }
+    private var searchTimer: Timer?
+
     init(presenter: TaskBrowserPresenterInput) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -31,12 +38,8 @@ final class TaskBrowserViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.viewDidLoad()
         title = Resources.Strings.taskBrowserTitle
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        presenter.moduleDidAppear()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -46,17 +49,66 @@ final class TaskBrowserViewController: UIViewController {
 }
 
 extension TaskBrowserViewController: TaskBrowserPresenterOutput {
+    
     func configure(with model: TaskBrowserModel) {
-        tasks = model.tasks
         customView.footerView.updateTaskCreationImage(model.state == .normal)
-        refreshUI()
+        presenter.fetchTasks()
+    }
+    
+    func reloadData() {
+        customView.tableView.reloadData()
+        print("reloadData")
+    }
+}
+
+extension TaskBrowserViewController: NSFetchedResultsControllerDelegate {
+
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        customView.tableView.beginUpdates()
+    }
+
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        customView.tableView.endUpdates()
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange anObject: Any,
+                    at indexPath: IndexPath?,
+                    for type: NSFetchedResultsChangeType,
+                    newIndexPath: IndexPath?) {
+        
+        switch type {
+        case .insert:
+            guard let newIndexPath else { return }
+            customView.tableView.insertRows(at: [newIndexPath], with: .left)
+            
+        case .delete:
+            guard let indexPath else { return }
+            customView.tableView.deleteRows(at: [indexPath], with: .right)
+            
+        case .update:
+            guard let indexPath else { return }
+            customView.tableView.reloadRows(at: [indexPath], with: .fade)
+         
+        case .move:
+            guard let indexPath, let newIndexPath else { return }
+            customView.tableView.moveRow(at: indexPath, to: newIndexPath)
+            
+        default:
+            reloadData()
+        }
     }
 }
 
 extension TaskBrowserViewController: UITableViewDelegate, UITableViewDataSource {
     
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return fetchedResultController.sections?.count ?? 0
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredTasks.count
+        guard let sections = fetchedResultController.sections else { return 0 }
+        return sections[section].numberOfObjects
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -64,9 +116,10 @@ extension TaskBrowserViewController: UITableViewDelegate, UITableViewDataSource 
             withIdentifier: TaskBrowserTableViewCell.identifier, for: indexPath) as? TaskBrowserTableViewCell else {
             return UITableViewCell()
         }
-        let task = filteredTasks[indexPath.row]
-        cell.filterPrompt = filterPrompt
+        let task = getTask(at: indexPath)
+        cell.searchText = self.searchText
         cell.model = task
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(checkboxTapped(_:)))
         cell.addGestureRecognizer(tapGesture)
 
@@ -74,7 +127,7 @@ extension TaskBrowserViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let task = filteredTasks[indexPath.row]
+        let task = getTask(at: indexPath)
         
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
             guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
@@ -92,7 +145,7 @@ extension TaskBrowserViewController: UITableViewDelegate, UITableViewDataSource 
             let edit = UIAction(
                 title: Resources.Strings.contextMenuEdit,
                 image: Resources.Images.contextMenuEdit) { [weak self] _ in
-                    self?.presenter.editTask(task)
+                    self?.presenter.showTaskDetails(task)
             }
             let share = UIAction(
                 title: Resources.Strings.contextMenuShare,
@@ -112,58 +165,53 @@ extension TaskBrowserViewController: UITableViewDelegate, UITableViewDataSource 
 
 extension TaskBrowserViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.filterPrompt = searchText.lowercased()
-        refreshUI()
+        self.searchText = searchText.lowercased()
     }
 }
 
 private extension TaskBrowserViewController {
     
-    func refreshFilteredTasks() {
-        filteredTasks = filterPrompt.count > 1 ? tasks.filter { task in
-            task.title.lowercased().contains(filterPrompt.lowercased()) ||
-            task.content.lowercased().contains(filterPrompt.lowercased())
-        } : tasks
-        completedTasks = filteredTasks.filter { $0.isCompleted }
+    func debounceFetchTasks() {
+        searchTimer?.invalidate()
+        searchTimer = Timer.scheduledTimer(
+            timeInterval: 0.5,
+            target: self,
+            selector: #selector(fetchTasksWithSearchText),
+            userInfo: nil,
+            repeats: false
+        )
     }
     
-    func refreshUI() {
-        refreshFilteredTasks()
-        customView.footerView.updateProgressLabel(countCompleted: completedTasks.count, countTotal: filteredTasks.count)
-        customView.tableView.reloadData()
+    func getTask(at indexPath: IndexPath) -> TaskDetailsModel {
+        return fetchedResultController.object(at: indexPath).toModel()
     }
     
-//    private func setupNavigationBar() {
-//        title = Resources.Strings.taskBrowserTitle
-//        let settingsButtonImage = Resources.Images.settings
-//        let settingsButton = UIBarButtonItem(
-//            image: settingsButtonImage,
-//            style: .plain,
-//            target: self,
-//            action: #selector(settingsTapped)
-//        )
-//        navigationItem.rightBarButtonItem = settingsButton
-//    }
-
+    @objc private func fetchTasksWithSearchText() {
+        presenter.fetchTasks(with: self.searchText)
+    }
+    
     @objc private func settingsTapped() {
-        presenter.settingsTapped()
+        presenter.showSettings()
     }
     
     @objc private func createTaskTapped() {
-        presenter.createTask()
+        presenter.addTask()
     }
     
     @objc private func checkboxTapped(_ sender: UITapGestureRecognizer) {
         guard
             let cell = sender.view as? TaskBrowserTableViewCell,
-            let task = cell.model else { return }
-        presenter.toggleCompletion(id: task.id)
+            var task = cell.model else { return }
+        
+        task.isCompleted.toggle()
+        presenter.modifyTask(task)
     }
     
     func setupDelegates() {
         customView.tableView.delegate = self
         customView.tableView.dataSource = self
         customView.searchBar.delegate = self
+        fetchedResultController.delegate = self
     }
     
     func setupActions() {

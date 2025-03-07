@@ -8,9 +8,9 @@ struct TaskNetworkRequest: NetworkRequest {
     var method: HTTPMethod = .get
     var queryItems: [URLQueryItem]? = .init()
     
-    init(limit: Int) {
+    init(count: Int = 2) {
         queryItems = [
-            URLQueryItem(name: Resources.Strings.apiQueryParamLimit, value: "\(limit)")
+            URLQueryItem(name: Resources.Strings.apiQueryParamLimit, value: "\(count)")
         ]
     }
 }
@@ -23,8 +23,8 @@ struct RandomTaskNetworkRequest: NetworkRequest {
     var method: HTTPMethod = .get
     var queryItems: [URLQueryItem]? = .init()
     
-    init(limit: Int = 4) {
-        endpoint = Resources.Strings.apiRandomTodosEndpoint + "/\(limit)"
+    init(count: Int = 2) {
+        endpoint = Resources.Strings.apiRandomTodosEndpoint + "/\(count)"
     }
 }
 

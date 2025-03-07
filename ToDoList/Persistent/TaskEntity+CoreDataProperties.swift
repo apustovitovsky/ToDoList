@@ -16,6 +16,8 @@ extension TaskEntity {
 
 }
 
+
+
 extension TaskEntity : Identifiable {
     
     func toModel() -> TaskDetailsModel {
@@ -28,7 +30,7 @@ extension TaskEntity : Identifiable {
         )
     }
     
-    func update(with model: TaskDetailsModel) {
+    func update(by model: TaskDetailsModel) {
         id = model.id
         title = model.title
         content = model.content
@@ -36,4 +38,5 @@ extension TaskEntity : Identifiable {
         isCompleted = model.isCompleted
     }
 }
+
 
