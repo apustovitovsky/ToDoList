@@ -31,7 +31,7 @@ final class TaskBrowserFooter: UIView {
 
 extension TaskBrowserFooter {
     
-    func updateTaskCreationImage(_ isEnabled: Bool) {
+    func setCreationEnabled(_ isEnabled: Bool) {
         taskCreationImage.tintColor = isEnabled ? Resources.Colors.accentColor : Resources.Colors.secondaryColor
         taskCreationImage.isUserInteractionEnabled = isEnabled
     }

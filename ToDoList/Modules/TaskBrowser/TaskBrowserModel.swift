@@ -15,7 +15,8 @@ extension TaskBrowserModel {
     
     enum State {
         case normal
-        case loading
+        case fetching
+        case creating
     }
 }
 

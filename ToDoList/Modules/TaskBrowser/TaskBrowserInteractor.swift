@@ -41,12 +41,12 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
 //        persistentService.deleteAllTasks()
 //        #endif
         
-        configureView(.loading)
+        configureView(.normal)
         fetchTasks()
     }
     
     func fetchTasksFromNetwork(count: Int) {
-        configureView(.loading)
+        configureView(.fetching)
         networkService.fetchTasks(count: count) { [weak self] result in
             guard let self = self, case .success(let tasks) = result else { return }
             persistentService.addTasks(tasks)
@@ -56,7 +56,6 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     
     func fetchTasks() {
         fetchTasks(with: "")
-        configureView(.normal)
         
         if let objects = fetchedResultController.fetchedObjects, objects.isEmpty {
             self.fetchTasksFromNetwork(count: 2)

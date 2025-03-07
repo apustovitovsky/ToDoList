@@ -2,6 +2,25 @@ import UIKit
 
 final class TaskBrowserView: UIView {
     
+    private lazy var loadingView: UIView = {
+        let view = UIView()
+        view.backgroundColor = Resources.Colors.backgroundPrimary.withAlphaComponent(0.5)
+        view.isHidden = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        let activityIndicator = UIActivityIndicatorView(style: .large)
+        activityIndicator.startAnimating()
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        return view
+    }()
+    
     private lazy var headerView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [titleLabel, settingsButton])
         stackView.axis = .horizontal
@@ -58,10 +77,16 @@ final class TaskBrowserView: UIView {
     }
 }
 
+extension TaskBrowserView {
+    func showLoading(_ show: Bool) {
+        loadingView.isHidden = !show
+    }
+}
+
 private extension TaskBrowserView {
  
     func setupSubviews() {
-        [headerView, searchBar, tableView, footerView].forEach {
+        [headerView, searchBar, tableView, footerView, loadingView].forEach {
             addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -85,7 +110,12 @@ private extension TaskBrowserView {
             footerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             footerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             footerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            footerView.heightAnchor.constraint(equalToConstant: Resources.Constants.footerHeight)
+            footerView.heightAnchor.constraint(equalToConstant: Resources.Constants.footerHeight),
+            
+            loadingView.topAnchor.constraint(equalTo: topAnchor),
+            loadingView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            loadingView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            loadingView.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
     }
     

@@ -19,7 +19,7 @@ final class TaskBrowserViewController: UIViewController {
         }
     }
     private var searchTimer: Timer?
-
+    
     init(presenter: TaskBrowserPresenterInput) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -51,8 +51,9 @@ final class TaskBrowserViewController: UIViewController {
 extension TaskBrowserViewController: TaskBrowserPresenterOutput {
     
     func configure(with model: TaskBrowserModel) {
-        customView.footerView.updateTaskCreationImage(model.state == .normal)
-        print(model.state)
+        customView.footerView.setCreationEnabled(model.state != .creating)
+        customView.showLoading(model.state == .fetching)
+        print(model.state as Any)
     }
     
     func reloadData() {
