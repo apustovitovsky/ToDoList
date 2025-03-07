@@ -8,7 +8,7 @@ protocol TaskDetailsInteractorInput: AnyObject {
 final class TaskDetailsInteractor {
     weak var presenter: TaskDetailsInteractorOutput?
     var model: TaskDetailsModel
-    let service = TaskPersistentService.shared
+    //let service = TaskPersistentService.shared
     
     init(model: TaskDetailsModel) {
         self.model = model
@@ -17,7 +17,7 @@ final class TaskDetailsInteractor {
 
 extension TaskDetailsInteractor: TaskDetailsInteractorInput {
     func editingDidFinish() {
-        service.modifyTasks([model], completion: nil)
+    //    service.modifyTasks([model], completion: nil)
     }
     
     func titleDidChange(_ title: String) {

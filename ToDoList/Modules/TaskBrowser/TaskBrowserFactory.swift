@@ -2,7 +2,7 @@ struct TaskBrowserFactoryB: ModuleFactory {
     func makeStep(with _: Void) -> RoutingStep<TaskBrowserRouter> {
         let router = TaskBrowserRouter()
         
-        let persistentService = CoreDataService()
+        let persistentService = TaskStorageService()
         
         
         let interactor = TaskBrowserInteractor(
