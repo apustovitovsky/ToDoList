@@ -1,6 +1,8 @@
+import Foundation
+
 protocol SettingsInteractorInput: AnyObject {
-    func didChangeTheme(to _: Bool)
-    func getEffectiveTheme() -> ThemeProvider.Theme
+    func themeDidSelect(to _: Bool)
+    func getEffectiveTheme() -> Theme
 }
 
 final class SettingsInteractor {
@@ -13,16 +15,26 @@ final class SettingsInteractor {
     init(model: SettingsModel, themeProvider: ThemeProvider) {
         self.model = model
         self.themeProvider = themeProvider
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(themeDidChange),
+            name: ThemeProvider.themeDidChangeNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func themeDidChange() {
+        presenter?.updateTheme(isDark: themeProvider.effectiveTheme == .dark)
     }
 }
 
 extension SettingsInteractor: SettingsInteractorInput {
-    func getEffectiveTheme() -> ThemeProvider.Theme {
+    func getEffectiveTheme() -> Theme {
         themeProvider.effectiveTheme
     }
     
-    func didChangeTheme(to isDarkMode: Bool) {
-        themeProvider.setupTheme(isDarkMode ? .dark : .light)
+    func themeDidSelect(to isDarkMode: Bool) {
+        themeProvider.setupTheme(to: isDarkMode ? .dark : .light)
     }
 }
 

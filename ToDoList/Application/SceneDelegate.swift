@@ -5,6 +5,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     private var coordinator: ApplicationCoordinator?
+    private var themeProvider: ThemeProviderProtocol = ThemeProvider()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
@@ -13,11 +14,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigationController = AppNavigationController()
         window.rootViewController = navigationController
         
-        let themeProvider = ThemeProvider(window: window)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applyTheme),
+            name: ThemeProvider.themeDidChangeNotification,
+            object: nil)
         
         coordinator = ApplicationCoordinator(
             router: DefaultRouter(rootController: navigationController),
-            themeProvider: themeProvider,
+            themeProvider: themeProvider as! ThemeProvider,
             storageService: TaskStorageService(),
             networkService: TaskNetworkService()
         )
@@ -26,7 +31,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         
         coordinator?.start()
-        themeProvider.applyTheme()
+        applyTheme()
+    }
+    
+    @objc private func applyTheme() {
+        guard let window = window else { return }
+        UIView.transition(with: window, duration: 0.4, options: .transitionCrossDissolve) { [weak self] in
+            guard let theme = self?.themeProvider.effectiveTheme else { return }
+            window.overrideUserInterfaceStyle = theme == .dark ? .dark : .light
+        }
+    }
+    
+    func windowScene(_ windowScene: UIWindowScene,
+                     didUpdate previousCoordinateSpace: UICoordinateSpace,
+                     interfaceOrientation: UIInterfaceOrientation,
+                     traitCollection: UITraitCollection) {
+        
+        let newTheme: Theme = traitCollection.userInterfaceStyle == .dark ? .dark : .light
+        themeProvider.setupTheme(to: newTheme)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

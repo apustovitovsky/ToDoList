@@ -6,7 +6,7 @@ protocol SettingsPresenterInput: AnyObject {
 }
 
 protocol SettingsInteractorOutput: AnyObject {
-    
+    func updateTheme(isDark: Bool)
 }
 
 final class SettingsPresenter {
@@ -30,10 +30,12 @@ extension SettingsPresenter: SettingsPresenterInput {
     }
     
     func didChangeTheme(to isDarkMode: Bool) {
-        interactor.didChangeTheme(to: isDarkMode)
+        interactor.themeDidSelect(to: isDarkMode)
     }
 }
 
 extension SettingsPresenter: SettingsInteractorOutput {
-    
+    func updateTheme(isDark: Bool) {
+        view?.updateTheme(isDark: isDark)
+    }
 }

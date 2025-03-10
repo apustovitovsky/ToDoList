@@ -1,19 +1,19 @@
 import UIKit
 
-class ThemeProvider {
-    
-    enum Theme: Int {
-        case light = 0
-        case dark = 1
-    }
-    
-    private weak var window: UIWindow?
-    
-//    static let shared = ThemeProvider(window: UIWindow)
-    
-    init(window: UIWindow) {
-        self.window = window
-    }
+enum Theme: Int {
+    case light = 0
+    case dark = 1
+}
+
+protocol ThemeProviderProtocol {
+
+    var effectiveTheme: Theme { get }
+    func setupTheme(to newTheme: Theme)
+}
+
+class ThemeProvider: ThemeProviderProtocol {
+
+    static let themeDidChangeNotification = Notification.Name("themeDidChangeNotification")
     
     var effectiveTheme: Theme {
         return storedTheme ?? systemTheme ?? .light
@@ -27,35 +27,20 @@ class ThemeProvider {
     }
     
     private var systemTheme: Theme? {
-//        guard let window = UIApplication.shared
-//            .connectedScenes
-//            .compactMap({ $0 as? UIWindowScene })
-//            .first?
-//            .windows
-//            .first else { return nil }
-        
-        return window?.traitCollection.userInterfaceStyle == .dark ? .dark : .light
+        return UIScreen.main.traitCollection.userInterfaceStyle == .dark ? .dark : .light
     }
     
-    func applyTheme() {
-//        guard let window = UIApplication.shared
-//            .connectedScenes
-//            .compactMap({ $0 as? UIWindowScene })
-//            .first?
-//            .windows
-//            .first else { return }
-        
-        guard let window else { return }
-        
-        UIView.transition(with: window, duration: 0.4, options: .transitionCrossDissolve) { [weak self] in
-            guard let theme = self?.effectiveTheme else { return }
-            self?.window?.overrideUserInterfaceStyle = theme == .dark ? .dark : .light
+    private func applyTheme() {
+        NotificationCenter.default.post(name: ThemeProvider.themeDidChangeNotification, object: nil)
+    }
+    
+    func setupTheme(to newTheme: Theme) {
+ 
+        if newTheme != effectiveTheme {
+            print(newTheme)
+            UserDefaults.standard.set(newTheme.rawValue, forKey: themeKey)
+            applyTheme()
         }
-    }
-    
-    func setupTheme(_ theme: Theme) {
-        UserDefaults.standard.set(theme.rawValue, forKey: themeKey)
-        applyTheme()
     }
     
     func resetTheme() {
