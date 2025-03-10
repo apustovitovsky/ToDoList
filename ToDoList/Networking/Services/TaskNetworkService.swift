@@ -1,18 +1,15 @@
 import Foundation
 
 protocol TaskNetworkServiceProtocol: NetworkService {
-    func fetchTasks(count: Int, completion: @escaping ResultHandler<[TaskDetailsModel]>)
+    func fetchTasks(completion: @escaping ResultHandler<[TaskDetailsModel]>)
 }
 
 final class TaskNetworkService: TaskNetworkServiceProtocol {
     
-    static let shared: TaskNetworkService = .init()
-    private init() {}
-    
     let basePath: String = Resources.Strings.apiBasePath
     
-    func fetchTasks(count: Int, completion: @escaping ResultHandler<[TaskDetailsModel]>) {
-        try? send(request: RandomTaskNetworkRequest(count: count)) { result in
+    func fetchTasks(completion: @escaping ResultHandler<[TaskDetailsModel]>) {
+        try? send(request: RandomTaskNetworkRequest(count: 3)) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):

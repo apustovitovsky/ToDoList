@@ -6,18 +6,24 @@ protocol TaskDetailsInteractorInput: AnyObject {
 }
 
 final class TaskDetailsInteractor {
-    weak var presenter: TaskDetailsInteractorOutput?
-    var model: TaskDetailsModel
-    //let service = TaskPersistentService.shared
     
-    init(model: TaskDetailsModel) {
+    weak var presenter: TaskDetailsInteractorOutput?
+    private var model: TaskDetailsModel
+    private let storageService: TaskStorageServiceProtocol
+    
+    init(model: TaskDetailsModel, storageService: TaskStorageServiceProtocol) {
         self.model = model
+        self.storageService = storageService
     }
 }
 
 extension TaskDetailsInteractor: TaskDetailsInteractorInput {
     func editingDidFinish() {
-    //    service.modifyTasks([model], completion: nil)
+        if model.title.isEmpty && model.content.isEmpty {
+            storageService.deleteTask(with: model.id)
+        } else {
+            storageService.modifyTask(model)
+        }
     }
     
     func titleDidChange(_ title: String) {

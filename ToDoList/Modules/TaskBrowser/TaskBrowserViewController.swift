@@ -53,12 +53,10 @@ extension TaskBrowserViewController: TaskBrowserPresenterOutput {
     func configure(with model: TaskBrowserModel) {
         customView.footerView.setCreationEnabled(model.state != .creating)
         customView.showLoading(model.state == .fetching)
-        print(model.state as Any)
     }
     
     func reloadData() {
         customView.tableView.reloadData()
-        print("reloadData")
     }
 }
 
@@ -121,8 +119,13 @@ extension TaskBrowserViewController: UITableViewDelegate, UITableViewDataSource 
         cell.searchText = self.searchText
         cell.model = task
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(checkboxTapped(_:)))
-        cell.addGestureRecognizer(tapGesture)
+        // Add tap gesture to the checkboxImageView
+        let checkboxTapGesture = UITapGestureRecognizer(target: self, action: #selector(checkboxTapped(_:)))
+        cell.checkboxImageView.addGestureRecognizer(checkboxTapGesture)
+
+        // Add tap gesture to the cell itself
+        let cellTapGesture = UITapGestureRecognizer(target: self, action: #selector(cellTapped(_:)))
+        cell.addGestureRecognizer(cellTapGesture)
 
         return cell
     }
@@ -201,11 +204,20 @@ private extension TaskBrowserViewController {
     
     @objc private func checkboxTapped(_ sender: UITapGestureRecognizer) {
         guard
-            let cell = sender.view as? TaskBrowserTableViewCell,
+            let checkboxImageView = sender.view as? UIImageView,
+            let cell = checkboxImageView.superview?.superview as? TaskBrowserTableViewCell,
             var task = cell.model else { return }
         
         task.isCompleted.toggle()
         presenter.modifyTask(task)
+    }
+
+    @objc private func cellTapped(_ sender: UITapGestureRecognizer) {
+        guard
+            let cell = sender.view as? TaskBrowserTableViewCell,
+            let task = cell.model else { return }
+        
+        presenter.showTaskDetails(task)
     }
     
     func setupDelegates() {

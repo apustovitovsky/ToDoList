@@ -17,6 +17,7 @@ extension TaskBrowserModel {
         case normal
         case fetching
         case creating
+        case error
     }
 }
 

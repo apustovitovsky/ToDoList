@@ -12,7 +12,7 @@ extension TaskEntity {
     @NSManaged public var title: String?
     @NSManaged public var content: String?
     @NSManaged public var isCompleted: Bool
-    @NSManaged public var createdAt: Date?
+    @NSManaged public var createdAt: Date
 
 }
 
@@ -20,7 +20,7 @@ extension TaskEntity : Identifiable {
     
     convenience init(context: NSManagedObjectContext, with model: TaskDetailsModel) {
         self.init(context: context)
-        id = UUID()
+        id = model.id
         title = model.title
         content = model.content
         createdAt = model.createdAt
@@ -33,7 +33,7 @@ extension TaskEntity : Identifiable {
             id: self.id,
             title: self.title ?? "",
             content: self.content ?? "",
-            createdAt: self.createdAt ?? Date(),
+            createdAt: self.createdAt,
             isCompleted: self.isCompleted
         )
     }

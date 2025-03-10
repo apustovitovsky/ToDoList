@@ -10,14 +10,13 @@ final class TaskBrowserTableViewCell: UITableViewCell {
             configure(with: model)
         }
     }
-    
     var searchText: String = "" {
         didSet {
             applyFilterPrompt()
         }
     }
 
-    private lazy var checkboxImageView: UIImageView = {
+    lazy var checkboxImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = Resources.Colors.tertiaryColor
         imageView.isUserInteractionEnabled = true

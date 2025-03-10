@@ -6,9 +6,11 @@ protocol TaskStorageServiceProtocol {
     
     func fetchTasks(with filter: String)
     func fetchTasksBackground(block: @escaping Handler<[TaskDetailsModel]>)
-    func addTasks(_: [TaskDetailsModel])
+    func addTask(_ model: TaskDetailsModel)
+    func addTasks(_ models: [TaskDetailsModel])
     func deleteTask(with id: UUID)
-    func deleteAllTasks()
+//    func deleteAllTasks()
+//    func deleteEmptyTasks()
     func modifyTask(_: TaskDetailsModel)
 }
 
@@ -56,6 +58,10 @@ final class TaskStorageService: TaskStorageServiceProtocol {
         }
     }
     
+    func addTask(_ model: TaskDetailsModel) {
+        addTasks([model])
+    }
+    
     func addTasks(_ models: [TaskDetailsModel]) {
         coreDataManager.performBackgroundTask { [weak self] context in
             models.forEach {
@@ -76,14 +82,28 @@ final class TaskStorageService: TaskStorageServiceProtocol {
         }
     }
     
-    func deleteAllTasks() {
-        coreDataManager.performBackgroundTask { [weak self] context in
-            let fetchRequest: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
-            guard let tasks = try? context.fetch(fetchRequest) else { return }
-            tasks.forEach { context.delete($0) }
-            self?.coreDataManager.saveContext(context)
-        }
-    }
+//    func deleteAllTasks() {
+//        coreDataManager.performBackgroundTask { [weak self] context in
+//            let fetchRequest: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
+//            guard let tasks = try? context.fetch(fetchRequest) else { return }
+//            tasks.forEach { context.delete($0) }
+//            self?.coreDataManager.saveContext(context)
+//        }
+//    }
+    
+//    func deleteEmptyTasks() {
+//        coreDataManager.performBackgroundTask { [weak self] context in
+//            let fetchRequest: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
+//            fetchRequest.predicate = NSPredicate(format: "title == ''")
+//            do {
+//                let results = try context.fetch(fetchRequest)
+//                results.forEach { context.delete($0) }
+//                self?.coreDataManager.saveContext(context)
+//            } catch {
+//                print("Failed to fetch tasks: \(error)")
+//            }
+//        }
+//    }
 
     func modifyTask(_ model: TaskDetailsModel) {
         coreDataManager.performBackgroundTask { [weak self] context in

@@ -4,10 +4,18 @@ final class ApplicationCoordinator: Coordinator {
     
     private let router: Router
     private let themeProvider: ThemeProvider
+    private let storageService: TaskStorageServiceProtocol
+    private let networkService: TaskNetworkServiceProtocol
     
-    init(router: Router, themeProvider: ThemeProvider) {
+    init(router: Router,
+         themeProvider: ThemeProvider,
+         storageService: TaskStorageServiceProtocol,
+         networkService: TaskNetworkServiceProtocol) {
+        
         self.router = router
         self.themeProvider = themeProvider
+        self.storageService = storageService
+        self.networkService = networkService
     }
     
     func start(with option: LaunchOption?) {
@@ -31,7 +39,9 @@ final class ApplicationCoordinator: Coordinator {
 private extension ApplicationCoordinator {
     
     func showTaskList() {
-        let step = TaskBrowserFactoryB().makeStep()
+        let step = TaskBrowserFactory(
+            storageService: storageService,
+            networkService: networkService).makeStep()
         
         step.output.showTaskDetails = { [weak self] task in
             self?.showEditTask(with: task, animated: true)
@@ -39,11 +49,14 @@ private extension ApplicationCoordinator {
         step.output.showSettings = { [weak self] in
             self?.showSettings(animated: true)
         }
+        
         router.setRootModule(step)
     }
     
     func showEditTask(with model: TaskDetailsModel, animated: Bool) {
-        let step = TaskDetailsFactory().makeStep(with: model)
+        let step = TaskDetailsFactory(
+            storageService: storageService).makeStep(with: model)
+        
         router.push(step, animated: animated)
     }
     

@@ -16,15 +16,15 @@ protocol TaskBrowserInteractorInput: AnyObject {
 final class TaskBrowserInteractor {
     
     weak var presenter: TaskBrowserInteractorOutput?
-    private let persistentService: TaskStorageServiceProtocol
-    private let networkService: TaskNetworkServiceProtocol
     private var model: TaskBrowserModel
-    
+    private let storageService: TaskStorageServiceProtocol
+    private let networkService: TaskNetworkServiceProtocol
+
     init(model: TaskBrowserModel,
-         persistentService: TaskStorageServiceProtocol,
+         storageService: TaskStorageServiceProtocol,
          networkService: TaskNetworkServiceProtocol) {
         self.model = model
-        self.persistentService = persistentService
+        self.storageService = storageService
         self.networkService = networkService
     }
 }
@@ -32,13 +32,13 @@ final class TaskBrowserInteractor {
 extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     
     var fetchedResultController: NSFetchedResultsController<TaskEntity> {
-        persistentService.fetchedResultsController
+        storageService.fetchedResultsController
     }
     
     func viewDidLoad() {
         
 //        #if DEBUG
-//        persistentService.deleteAllTasks()
+//        storageService.deleteAllTasks()
 //        #endif
         
         configureView(.normal)
@@ -47,10 +47,16 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     
     func fetchTasksFromNetwork(count: Int) {
         configureView(.fetching)
-        networkService.fetchTasks(count: count) { [weak self] result in
-            guard let self = self, case .success(let tasks) = result else { return }
-            persistentService.addTasks(tasks)
-            configureView(.normal)
+        networkService.fetchTasks { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let tasks):
+                self.storageService.addTasks(tasks)
+                self.configureView(.normal)
+            case .failure(let error):
+                print("Failed to fetch tasks from network: \(error)")
+                self.configureView(.error)
+            }
         }
     }
     
@@ -63,20 +69,22 @@ extension TaskBrowserInteractor: TaskBrowserInteractorInput {
     }
     
     func fetchTasks(with filter: String) {
-        persistentService.fetchTasks(with: filter)
+        storageService.fetchTasks(with: filter)
         presenter?.reloadData()
     }
     
     func addEmptyTask() {
-        persistentService.addTasks([TaskDetailsModel.createEmpty])
+        let newTask = TaskDetailsModel.createEmpty
+        storageService.addTask(newTask)
+        presenter?.showTaskDetails(newTask)
     }
     
     func deleteTask(_ model: TaskDetailsModel) {
-        persistentService.deleteTask(with: model.id)
+        storageService.deleteTask(with: model.id)
     }
     
     func modifyTask(_ model: TaskDetailsModel) {
-        persistentService.modifyTask(model)
+        storageService.modifyTask(model)
     }
 }
 

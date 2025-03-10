@@ -17,7 +17,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         coordinator = ApplicationCoordinator(
             router: DefaultRouter(rootController: navigationController),
-            themeProvider: themeProvider
+            themeProvider: themeProvider,
+            storageService: TaskStorageService(),
+            networkService: TaskNetworkService()
         )
         
         self.window = window
