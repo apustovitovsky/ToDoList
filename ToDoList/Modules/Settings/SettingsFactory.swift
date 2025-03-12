@@ -1,8 +1,8 @@
 struct SettingsFactory: ModuleFactory {
     
-    private let themeProvider: ThemeProvider
+    private let themeProvider: ThemeProviderProtocol
     
-    init(themeProvider: ThemeProvider) {
+    init(themeProvider: ThemeProviderProtocol) {
         self.themeProvider = themeProvider
     }
     

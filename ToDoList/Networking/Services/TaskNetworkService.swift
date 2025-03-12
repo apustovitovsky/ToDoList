@@ -9,7 +9,7 @@ final class TaskNetworkService: TaskNetworkServiceProtocol {
     let basePath: String = Resources.Strings.apiBasePath
     
     func fetchTasks(completion: @escaping ResultHandler<[TaskDetailsModel]>) {
-        try? send(request: RandomTaskNetworkRequest(count: 3)) { result in
+        try? send(request: RandomTaskNetworkRequest()) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):

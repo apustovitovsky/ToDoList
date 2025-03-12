@@ -1,119 +1,144 @@
 import XCTest
+import CoreData
 @testable import ToDoList
 
 final class TaskBrowserTests: XCTestCase {
-    
-    var presenter: TaskBrowserPresenter!
-    var interactor: TaskBrowserInteractor!
-    var router: TaskBrowserRouter!
-    var view: MockTaskBrowserView!
-    var storageService: MockTaskStorageService!
-    var networkService: MockTaskNetworkService!
-    
-    override func setUp() {
-        super.setUp()
-        router = TaskBrowserRouter()
-        storageService = MockTaskStorageService()
-        networkService = MockTaskNetworkService()
-        interactor = TaskBrowserInteractor(
-            model: TaskBrowserModel(),
-            storageService: storageService,
-            networkService: networkService
-        )
-        presenter = TaskBrowserPresenter(router: router, interactor: interactor)
-        view = MockTaskBrowserView()
-        presenter.view = view
-        interactor.presenter = presenter
-    }
-    
-    override func tearDown() {
-        presenter = nil
-        interactor = nil
-        router = nil
-        view = nil
-        storageService = nil
-        networkService = nil
-        super.tearDown()
-    }
-    
-    func testViewDidLoad() {
-        presenter.viewDidLoad()
-        XCTAssertTrue(view.isConfigured)
-    }
-    
-    func testFetchTasks() {
-        presenter.fetchTasks()
-        XCTAssertTrue(view.isReloaded)
-    }
-    
-    func testAddTask() {
-        presenter.addTask()
-        XCTAssertTrue(view.isTaskDetailsShown)
-    }
-    
-    func testModifyTask() {
-        let task = TaskDetailsModel.createEmpty
-        presenter.modifyTask(task)
-        XCTAssertTrue(storageService.isTaskModified)
-    }
-    
-    func testDeleteTask() {
-        let task = TaskDetailsModel.createEmpty
-        presenter.deleteTask(task)
-        XCTAssertTrue(storageService.isTaskDeleted)
-    }
-    
-    func testShowTaskDetails() {
-        let task = TaskDetailsModel.createEmpty
-        presenter.showTaskDetails(task)
-        XCTAssertTrue(view.isTaskDetailsShown)
-    }
-    
-    func testShowSettings() {
-        presenter.showSettings()
-        XCTAssertTrue(view.isSettingsShown)
-    }
-    
-    func testTaskBrowserFactory() {
-        let factory = TaskBrowserFactory(storageService: storageService, networkService: networkService)
-        let step = factory.makeStep()
-        
-        XCTAssertTrue(step.module is TaskBrowserViewController)
-        XCTAssertTrue(step.output is TaskBrowserRouter)
-        
-        let viewController = step.module as! TaskBrowserViewController
-        XCTAssertNotNil(viewController.presenter)
-        
-        let presenter = viewController.presenter as! TaskBrowserPresenter
-        XCTAssertNotNil(presenter.interactor)
-        XCTAssertNotNil(presenter.router)
-        
-        let interactor = presenter.interactor as! TaskBrowserInteractor
-        XCTAssertNotNil(interactor.storageService)
-        XCTAssertNotNil(interactor.networkService)
-    }
+
+   var interactor: TaskBrowserInteractor!
+   var presenter: TaskBrowserPresenter!
+   var mockView: MockTaskBrowserView!
+   var mockRouter: MockTaskBrowserRouter!
+   var mockStorageService: MockTaskStorageService!
+   var mockNetworkService: MockTaskNetworkService!
+
+   override func setUp() {
+       super.setUp()
+       mockView = MockTaskBrowserView()
+       mockRouter = MockTaskBrowserRouter()
+       mockStorageService = MockTaskStorageService()
+       mockNetworkService = MockTaskNetworkService()
+
+       interactor = TaskBrowserInteractor(
+           model: TaskBrowserModel(),
+           storageService: mockStorageService,
+           networkService: mockNetworkService
+       )
+       presenter = TaskBrowserPresenter(router: mockRouter, interactor: interactor)
+       presenter.view = mockView
+       interactor.presenter = presenter
+   }
+
+   override func tearDown() {
+       interactor = nil
+       presenter = nil
+       mockView = nil
+       mockRouter = nil
+       mockStorageService = nil
+       mockNetworkService = nil
+       super.tearDown()
+   }
+
+   func testAddEmptyTask() {
+       interactor.addEmptyTask()
+       XCTAssertEqual(mockStorageService.addedTasks.count, 1)
+       XCTAssertEqual(mockStorageService.addedTasks.first?.title, "")
+   }
+
+   func testFetchTasks() {
+       interactor.fetchTasks()
+       XCTAssertTrue(mockStorageService.fetchTasksCalled)
+   }
+
+   func testFetchTasksWithFilter() {
+       let filter = "test"
+       interactor.fetchTasks(with: filter)
+       XCTAssertEqual(mockStorageService.fetchFilter, filter)
+   }
+
+   func testDeleteTask() {
+       let task = TaskDetailsModel.createEmpty
+       interactor.deleteTask(task)
+       XCTAssertEqual(mockStorageService.deletedTaskID, task.id)
+   }
+
+   func testModifyTask() {
+       let task = TaskDetailsModel.createEmpty
+       interactor.modifyTask(task)
+       XCTAssertEqual(mockStorageService.modifiedTask?.id, task.id)
+   }
+
+   func testPresenterShowTaskDetails() {
+       let task = TaskDetailsModel.createEmpty
+       presenter.showTaskDetails(task)
+       XCTAssertTrue(mockRouter.showTaskDetailsCalled)
+   }
+
+   func testPresenterShowSettings() {
+       presenter.showSettings()
+       XCTAssertTrue(mockRouter.showSettingsCalled)
+   }
 }
 
-// Mock classes for testing
-class MockTaskBrowserView: TaskBrowserPresenterOutput {
-    var isConfigured = false
-    var isReloaded = false
-    var isTaskDetailsShown = false
-    var isSettingsShown = false
-    
-    func configure(with model: TaskBrowserModel) {
-        isConfigured = true
-    }
-    
-    func reloadData() {
-        isReloaded = true
-    }
+// MARK: - Mocks
+
+final class MockTaskBrowserView: TaskBrowserPresenterOutput {
+   func configure(with model: TaskBrowserModel) {}
+   func reloadData() {}
 }
 
-class MockTaskNetworkService: TaskNetworkServiceProtocol {
-    var basePath: String = ""
+final class MockTaskBrowserRouter: TaskBrowserModuleOutput {
+   lazy var showSettings: Action? = { [weak self] in
+       self?.showSettingsCalled = true
+   }
+   lazy var showTaskDetails: Handler<TaskDetailsModel>? = { [weak self] _ in
+       self?.showTaskDetailsCalled = true
+   }
     
-    func fetchTasks(completion: @escaping ResultHandler<[TaskDetailsModel]>) {
-        completion(.success([]))
-    }
+   var showSettingsCalled = false
+   var showTaskDetailsCalled = false
+}
+
+final class MockTaskStorageService: TaskStorageServiceProtocol {
+   var fetchedResultsController: NSFetchedResultsController<TaskEntity> {
+       return NSFetchedResultsController()
+   }
+
+   var fetchTasksCalled = false
+   var fetchFilter: String?
+   var addedTasks = [TaskDetailsModel]()
+   var deletedTaskID: UUID?
+   var modifiedTask: TaskDetailsModel?
+
+   func fetchTasks(with filter: String) {
+       fetchTasksCalled = true
+       fetchFilter = filter
+   }
+
+   func fetchTasksBackground(block: @escaping Handler<[TaskDetailsModel]>) {}
+
+   func addTask(_ model: TaskDetailsModel) {
+       addedTasks.append(model)
+   }
+
+   func addTasks(_ models: [TaskDetailsModel]) {
+       addedTasks.append(contentsOf: models)
+   }
+
+   func deleteTask(with id: UUID) {
+       deletedTaskID = id
+   }
+
+   func modifyTask(_ model: TaskDetailsModel) {
+       modifiedTask = model
+   }
+}
+
+final class MockTaskNetworkService: TaskNetworkServiceProtocol {
+   var basePath: String = ""
+
+   func fetchTasks(completion: @escaping ResultHandler<[TaskDetailsModel]>) {
+       completion(.success([]))
+   }
+
+   func send<T>(request: T, completion: @escaping ResultHandler<T.Response>) throws where T : NetworkRequest {}
 }

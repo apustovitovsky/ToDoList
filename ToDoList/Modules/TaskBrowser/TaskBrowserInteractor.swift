@@ -16,7 +16,7 @@ protocol TaskBrowserInteractorInput: AnyObject {
 final class TaskBrowserInteractor {
     
     weak var presenter: TaskBrowserInteractorOutput?
-    private var model: TaskBrowserModel
+    var model: TaskBrowserModel
     private let storageService: TaskStorageServiceProtocol
     private let networkService: TaskNetworkServiceProtocol
 

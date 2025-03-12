@@ -13,7 +13,6 @@ extension TaskEntity {
     @NSManaged public var content: String?
     @NSManaged public var isCompleted: Bool
     @NSManaged public var createdAt: Date
-
 }
 
 extension TaskEntity : Identifiable {
@@ -26,7 +25,6 @@ extension TaskEntity : Identifiable {
         createdAt = model.createdAt
         isCompleted = model.isCompleted
     }
-    
     
     func toModel() -> TaskDetailsModel {
         TaskDetailsModel(

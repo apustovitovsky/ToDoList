@@ -9,12 +9,15 @@ final class SettingsInteractor {
     
     weak var presenter: SettingsInteractorOutput?
     var model: SettingsModel
-    private let themeProvider: ThemeProvider
+    private let themeProvider: ThemeProviderProtocol
     
     
-    init(model: SettingsModel, themeProvider: ThemeProvider) {
+    init(model: SettingsModel,
+         themeProvider: ThemeProviderProtocol) {
+        
         self.model = model
         self.themeProvider = themeProvider
+        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChange),

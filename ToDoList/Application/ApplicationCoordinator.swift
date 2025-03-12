@@ -3,12 +3,12 @@ import Foundation
 final class ApplicationCoordinator: Coordinator {
     
     private let router: Router
-    private let themeProvider: ThemeProvider
+    private let themeProvider: ThemeProviderProtocol
     private let storageService: TaskStorageServiceProtocol
     private let networkService: TaskNetworkServiceProtocol
     
     init(router: Router,
-         themeProvider: ThemeProvider,
+         themeProvider: ThemeProviderProtocol,
          storageService: TaskStorageServiceProtocol,
          networkService: TaskNetworkServiceProtocol) {
         

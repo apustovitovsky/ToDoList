@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         coordinator = ApplicationCoordinator(
             router: DefaultRouter(rootController: navigationController),
-            themeProvider: themeProvider as! ThemeProvider,
+            themeProvider: themeProvider,
             storageService: TaskStorageService(),
             networkService: TaskNetworkService()
         )

@@ -8,7 +8,7 @@ protocol TaskBrowserPresenterOutput: AnyObject {
 
 final class TaskBrowserViewController: UIViewController {
     
-    private let presenter: TaskBrowserPresenterInput
+    let presenter: TaskBrowserPresenterInput
     private lazy var customView = TaskBrowserView()
     private var fetchedResultController: NSFetchedResultsController<TaskEntity> {
         presenter.fetchedResultController

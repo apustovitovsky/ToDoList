@@ -8,7 +8,7 @@ protocol TaskDetailsInteractorInput: AnyObject {
 final class TaskDetailsInteractor {
     
     weak var presenter: TaskDetailsInteractorOutput?
-    private var model: TaskDetailsModel
+    var model: TaskDetailsModel
     private let storageService: TaskStorageServiceProtocol
     
     init(model: TaskDetailsModel, storageService: TaskStorageServiceProtocol) {
